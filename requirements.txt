@@ -1,0 +1,11 @@
+discord.py
+requests
+asyncio
+datetime
+python-dotenv
+os
+random
+time
+json
+sys
+google-api-python-client
