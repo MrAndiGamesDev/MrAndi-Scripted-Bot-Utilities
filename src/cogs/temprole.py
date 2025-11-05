@@ -22,5 +22,5 @@ class TempRole(commands.Cog):
         await member.remove_roles(role)
         await ctx.send(f"Removed {role.mention} from {member.mention} after {duration} seconds.")
 
-def setup(bot):
-    bot.add_cog(TempRole(bot))
+async def setup(bot):
+    await bot.add_cog(TempRole(bot))
