@@ -27,6 +27,7 @@ class HelpCog(commands.Cog):
         "ping": "Replies with the bot client ping.",
         "purge": "Purges a specified number of messages from the channel.",
         "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
+        "replymodmail": "Reply to a message sent to the moderators via DM.",
         "restart": "Restarts the Discord bot.",
         "roll": "Rolls a die with a specified number of sides.",
         "setstatus": "Sets the bot's status message.",
@@ -39,7 +40,7 @@ class HelpCog(commands.Cog):
     }
 
     CATEGORIES: Dict[str, List[str]] = {
-        "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings"],
+        "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes"],
         "admin": ["restart", "shutdown", "setstatus", "giveaway", "tempRole", "modmail", "getbadge"],

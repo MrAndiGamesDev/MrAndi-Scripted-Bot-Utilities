@@ -18,30 +18,7 @@ class StatusUpdater:
     """Handles all status-related messaging for the bot."""
     def __init__(self, bot: "Bot") -> None:
         self.bot = bot
-
-    async def send(self, content: str, color: discord.Color) -> None:
-        """Send a status embed to the configured channel."""
-        try:
-            channel_id = self.bot._config["StatusChannelID"]
-            if not channel_id:
-                print("Status channel ID not configured.")
-                return
-            channel = self.bot.get_channel(channel_id)
-            if not channel:
-                print("Status channel not found.")
-                return
-            embed = discord.Embed(
-                title="Bot Status Update",
-                description=content,
-                color=color,
-                timestamp=datetime.datetime.now()
-            )
-            await channel.send(embed=embed)
-        except discord.Forbidden:
-            print("Missing permissions to send status message.")
-        except Exception as e:
-            print(f"Failed to send status message: {e}")
-
+        
     async def cog_error(self, name: str, exc: Exception) -> None:
         await self.send(f"Error loading cog {name}: {exc} ⚠️", discord.Color.orange())
 
