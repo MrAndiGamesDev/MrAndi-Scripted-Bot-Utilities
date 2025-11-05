@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+try:
+    from src.modules.load_config import load_config
+except ImportError:
+    # fallback or re-raise as needed
+    raise
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
@@ -7,142 +12,67 @@ class HelpCog(commands.Cog):
 
     @commands.command(name="help")
     async def help_command(self, ctx):
-        embed = discord.Embed(
+        commands_info = {
+            "avatar": "Displays the avatar of a user.",
+            "ban": "Bans a member from the server.",
+            "funCommand": "Fetches a random meme.",
+            "getbadge": "Provides information about getting the Active Developer Badge",
+            "giveaway": "Start a giveaway. Time is in minutes.",
+            "invite": "Generates and sends an invite link to the server.",
+            "joke": "Sends a random joke.",
+            "kick": "Kicks a member from the server.",
+            "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
+            "membercount": "Displays the number of members in the server.",
+            "modmail": "Send/reply to a message to/from the moderators via DM.",
+            "note": "Adds a personal note.",
+            "notes": "Displays your personal notes.",
+            "clearnotes": "Clears all your personal notes.",
+            "ping": "Replies with the bot client ping.",
+            "purge": "Purges a specified number of messages from the channel.",
+            "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
+            "restart": "Restarts the Discord bot.",
+            "roll": "Rolls a die with a specified number of sides.",
+            "setStatus": "Sets the bot's status message.",
+            "shutdown": "Shuts down the bot.",
+            "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
+            "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
+            "unban": "Unbans a member from the server.",
+            "clearwarnings": "Clears/warns/displays warnings for a member.",
+            "help": "Shows this message",
+        }
+
+        config = load_config()
+        prefix = config["Prefix"]
+
+        # Split into chunks of max 25 fields per embed
+        chunks = []
+        current_chunk = []
+        for cmd, desc in commands_info.items():
+            current_chunk.append((cmd, desc))
+            if len(current_chunk) == 25:
+                chunks.append(current_chunk)
+                current_chunk = []
+
+        if current_chunk:
+            chunks.append(current_chunk)
+
+        # Send first embed
+        first_embed = discord.Embed(
             title="Bot Commands",
             description="Here are the available commands:",
             color=discord.Color.purple()
         )
-        embed.add_field(
-            name="!Avatar: ",
-            value="Displays the avatar of a user.",
-            inline=False
+        for cmd, desc in chunks[0]:
+            first_embed.add_field(
+                name=f"{prefix}{cmd}",
+                value=desc,
+                inline=False
+            )
+        first_embed.set_footer(
+            text=f"Type {prefix}help command for more info on a command.\n"
+                 f"You can also type {prefix}help category for more info on a category."
         )
-        embed.add_field(
-            name="!Ban: ",
-            value="Bans a member from the server.",
-            inline=False
-        )
-        embed.add_field(
-            name="!FunCommand: ",
-            value="Fetches a random meme.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Getbadge: ",
-            value="Provides information about getting the Active Developer Badge",
-            inline=False
-        )
-        embed.add_field(
-            name="!Giveaway: ",
-            value="Start a giveaway. Time is in minutes.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Invite: ",
-            value="Generates and sends an invite link to the server.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Joke: ",
-            value="Sends a random joke.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Kick: ",
-            value="Kicks a member from the server.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Lockdown: ",
-            value="Locks the channel so that no one can send messages.\n"
-                  "Unlocks the channel so that everyone can send messages again.",
-            inline=False
-        )
-        embed.add_field(
-            name="!MemberCount: ",
-            value="Displays the number of members in the server.",
-            inline=False
-        )
-        embed.add_field(
-            name="!ModMail: ",
-            value="Send a message to the moderators via DM.\n"
-                  "Reply to a user's modmail via DM.",
-            inline=False
-        )
-        embed.add_field(
-            name="!NoteCog: ",
-            value="Clears all your personal notes.\n"
-                  "Adds a personal note.\n"
-                  "Displays your personal notes.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Ping: ",
-            value="Replys with a bot client pings",
-            inline=False
-        )
-        embed.add_field(
-            name="!Purge: ",
-            value="Purges a specified number of messages from the channel.",
-            inline=False
-        )
-        embed.add_field(
-            name="!RPS: ",
-            value="Play a game of rock-paper-scissors. Choices: rock, paper, sci...",
-            inline=False
-        )
-        embed.add_field(
-            name="!Restart: ",
-            value="Restarts the discord bot.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Roll: ",
-            value="Rolls a die with a specified number of sides.",
-            inline=False
-        )
-        embed.add_field(
-            name="!SetStatus: ",
-            value="Sets the bot's status message.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Shutdown: ",
-            value="Shuts down the bot.",
-            inline=False
-        )
-        embed.add_field(
-            name="!Slowmode: ",
-            value="Sets slowmode for the channel in seconds, minutes, or hours.",
-            inline=False
-        )
-        embed.add_field(
-            name="!TempRole: ",
-            value="Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
-            inline=False
-        )
-        embed.add_field(
-            name="!Unban: ",
-            value="Unbans a member from the server.",
-            inline=False
-        )
-        embed.add_field(
-            name="!clearwarnings: ",
-            value="Clears all warnings for a member.\n"
-                  "Warns a member and records the reason.\n"
-                  "Displays all warnings for a member.",
-            inline=False
-        )
-        embed.add_field(
-            name="​!No Category: ",
-            value="!help Shows this message",
-            inline=False
-        )
-        embed.set_footer(
-            text="Type !help command for more info on a command.\n"
-                 "You can also type !help category for more info on a category."
-        )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=first_embed)
 
 async def setup(bot):
     await bot.add_cog(HelpCog(bot))
