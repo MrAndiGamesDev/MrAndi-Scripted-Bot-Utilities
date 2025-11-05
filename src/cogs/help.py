@@ -15,11 +15,10 @@ class HelpCog(commands.Cog):
         commands_info = {
             "avatar": "Displays the avatar of a user.",
             "ban": "Bans a member from the server.",
-            "funCommand": "Fetches a random meme.",
+            "joke": "Fetches a random meme.",
             "getbadge": "Provides information about getting the Active Developer Badge",
             "giveaway": "Start a giveaway. Time is in minutes.",
             "invite": "Generates and sends an invite link to the server.",
-            "joke": "Sends a random joke.",
             "kick": "Kicks a member from the server.",
             "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
             "membercount": "Displays the number of members in the server.",
@@ -32,7 +31,7 @@ class HelpCog(commands.Cog):
             "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
             "restart": "Restarts the Discord bot.",
             "roll": "Rolls a die with a specified number of sides.",
-            "setStatus": "Sets the bot's status message.",
+            "setstatus": "Sets the bot's status message.",
             "shutdown": "Shuts down the bot.",
             "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
             "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
@@ -69,8 +68,8 @@ class HelpCog(commands.Cog):
                 inline=False
             )
         first_embed.set_footer(
-            text=f"Type {prefix}help command for more info on a command.\n"
-                 f"You can also type {prefix}help category for more info on a category."
+            text=f"Type {prefix}help <command> for details on a specific command.\n"
+                 f"Use {prefix}help <category> to explore command categories."
         )
         await ctx.send(embed=first_embed)
 

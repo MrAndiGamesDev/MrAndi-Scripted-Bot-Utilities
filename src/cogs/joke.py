@@ -1,16 +1,18 @@
+import random
 import discord
 from discord.ext import commands
-import random
-import json
 
-# Load config
-with open('config.json') as f:
-    config = json.load(f)
+try:
+    from src.modules.load_config import load_config
+except ImportError:
+    # fallback or re-raise as needed
+    raise
 
 class Joke(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.jokes = config["jokes"]
+        self.config = load_config()
+        self.jokes = self.config["jokes"]
 
     @commands.command(name="joke")
     async def joke(self, ctx):

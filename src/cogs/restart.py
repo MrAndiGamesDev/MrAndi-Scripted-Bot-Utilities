@@ -17,8 +17,9 @@ class Restart(commands.Cog):
             color=discord.Color.purple()
         )
         await ctx.send(embed=embed)
+        # Schedule the actual restart after the message is sent
         await self.bot.close()
-        os.execv(sys.executable, [sys.executable] + sys.argv)
+        os.execv(sys.executable, ['python'] + sys.argv)
 
 async def setup(bot):
     await bot.add_cog(Restart(bot))
