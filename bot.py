@@ -1,12 +1,12 @@
 import sys
 import datetime
 import os
-from pathlib import Path
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.gateway import DiscordWebSocket
 from dotenv import load_dotenv
+from pathlib import Path
 
 try:
     from src.modules.set_mobile import Socket
@@ -93,13 +93,12 @@ class Bot(commands.Bot):
             await ctx.send(f"❌ An error occurred: {error}")
             print(f"Unhandled error: {error}")
 
-def main() -> None:
+if __name__ == "__main__":
     load_dotenv()
     config = load_config()
     token = os.getenv("TOKEN")
     if not token:
         raise ValueError("No token found in .env file")
-
     bot = Bot(config)
     try:
         bot.run(token)
@@ -107,6 +106,3 @@ def main() -> None:
         print("Failed to login: Invalid token")
     except Exception as e:
         print(f"Error running bot: {e}")
-
-if __name__ == "__main__":
-    main()
