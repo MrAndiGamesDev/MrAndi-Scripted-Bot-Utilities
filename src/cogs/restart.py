@@ -12,7 +12,7 @@ class Restart(commands.Cog):
     async def restart(self, ctx):
         """Restart the bot."""
         embed = discord.Embed(
-            title="🔄 Restarting bot...",
+            title="Restarting bot...",
             description="The bot is restarting now.",
             color=discord.Color.purple()
         )

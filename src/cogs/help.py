@@ -127,7 +127,7 @@ class HelpCog(commands.Cog):
             inline=False
         )
         embed.add_field(
-            name="!WarnSystem: ",
+            name="!clearwarnings: ",
             value="Clears all warnings for a member.\n"
                   "Warns a member and records the reason.\n"
                   "Displays all warnings for a member.",
