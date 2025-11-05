@@ -61,5 +61,5 @@ class Slowmode(commands.Cog):
             await ctx.send("An unexpected error occurred while processing the command.")
 
 # Add the cog to the bot
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Slowmode(bot))

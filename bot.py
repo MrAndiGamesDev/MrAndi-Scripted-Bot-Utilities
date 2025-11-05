@@ -9,27 +9,62 @@ from pathlib import Path
 
 try:
     from src.modules.load_config import load_config
-    from src.private.set_identify import Mobile
-    from src.private.set_identify import PC
+    from src.private.set_identify import Mobile, PC
 except ImportError:
     from modules.load_config import load_config
-    from private.set_identify import Mobile
-    from private.set_identify import PC
+    from private.set_identify import Mobile, PC
+
+class StatusUpdater:
+    """Handles all status-related messaging for the bot."""
+    def __init__(self, bot: "Bot") -> None:
+        self.bot = bot
+
+    async def send(self, content: str, color: discord.Color) -> None:
+        """Send a status embed to the configured channel."""
+        try:
+            channel_id = self.bot._config["StatusChannelID"]
+            if not channel_id:
+                print("Status channel ID not configured.")
+                return
+            channel = self.bot.get_channel(channel_id)
+            if not channel:
+                print("Status channel not found.")
+                return
+            embed = discord.Embed(
+                title="Bot Status Update",
+                description=content,
+                color=color,
+                timestamp=datetime.datetime.now()
+            )
+            await channel.send(embed=embed)
+        except discord.Forbidden:
+            print("Missing permissions to send status message.")
+        except Exception as e:
+            print(f"Failed to send status message: {e}")
+
+    async def cog_error(self, name: str, exc: Exception) -> None:
+        await self.send(f"Error loading cog {name}: {exc} ⚠️", discord.Color.orange())
 
 class Bot(commands.Bot):
     def __init__(self, config: dict) -> None:
-        self._config = config
+        self._Is_Mobile = True
+        self._config = config or load_config()
         intents = discord.Intents.default()
         intents.message_content = True
         intents.typing = True
 
         super().__init__(command_prefix=config["Prefix"], intents=intents)
         self.remove_command("help")
-        DiscordWebSocket.identify = Mobile.identify
+        DiscordWebSocket.identify = self.IsMobile()
+        self.status_updater = StatusUpdater(self)
+
+    def IsMobile(self) -> bool:
+        if self._Is_Mobile == True:
+            return Mobile.identify
+        return PC.identify
 
     async def setup_hook(self) -> None:
         await self.load_all_cogs()
-        await self.send_status("Bot is now online! 🟢", discord.Color.green())
         
         # Ensure the client is ready before calling change_presence
         if self.is_ready():
@@ -43,13 +78,11 @@ class Bot(commands.Bot):
         await self.change_presence_status()
 
     async def change_presence_status(self) -> None:
-        await self.change_presence(
-                activity=discord.Activity(
-                    type=discord.ActivityType.watching,
-                    name=f"Need any Help with the bot? Just Use {self._config['Prefix']}help"
-                ),
-                status=discord.Status.online
-            )
+        activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name=f"Need any Help with the bot? Just Use {self._config['Prefix']}help"
+        )
+        await self.change_presence(activity=activity, status=discord.Status.online)
 
     async def load_all_cogs(self) -> None:
         cog_dir = Path(__file__).parent / "src" / "cogs"
@@ -57,31 +90,23 @@ class Bot(commands.Bot):
             print(f"Cog directory {cog_dir} not found.")
             return
 
+        loaded, failed = [], []
         for file in cog_dir.glob("*.py"):
             try:
                 await self.load_extension(f"src.cogs.{file.stem}")
-                print(f"Loaded cog: {file.stem}")
+                loaded.append(file.stem)
             except Exception as exc:
-                print(f"Failed to load cog {file.stem}: {exc}")
-                await self.send_status(f"Error loading cog {file.stem}: {exc} ⚠️", discord.Color.orange())
+                failed.append((file.stem, exc))
 
-    async def send_status(self, status: str, color: discord.Color) -> None:
-        channel = self.get_channel(self._config["StatusChannelID"])
-        if channel:
-            embed = discord.Embed(
-                title="Bot Status Update",
-                description=status,
-                color=color,
-                timestamp=datetime.datetime.now()
-            )
-            await channel.send(embed=embed)
-
-    async def on_disconnect(self) -> None:
-        await self.send_status("Bot has disconnected! 🔴", discord.Color.red())
+        for name in loaded:
+            print(f"Loaded cog: {name}")
+        for name, exc in failed:
+            print(f"Failed to load cog {name}: {exc}")
+            await self.status_updater.cog_error(name, exc)
 
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send(f"❌ Command not found! Use {self._config["Prefix"]}help to see available commands.")
+            await ctx.send(f"❌ Command not found! Use {self._config['Prefix']}help to see available commands.")
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(f"❌ You don't have permission to use this command! Use {self._config['Prefix']}help to see available commands.")
         elif isinstance(error, commands.MissingRequiredArgument):

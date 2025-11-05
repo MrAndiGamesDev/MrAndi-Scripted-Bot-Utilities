@@ -31,5 +31,5 @@ class Ban(commands.Cog):
         except discord.HTTPException:
             await ctx.send("An error occurred while trying to ban that member.")
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Ban(bot))

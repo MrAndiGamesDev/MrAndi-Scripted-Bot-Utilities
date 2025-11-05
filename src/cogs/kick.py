@@ -31,5 +31,5 @@ class Kick(commands.Cog):
         except discord.HTTPException:
             await ctx.send("An error occurred while trying to kick that member.")
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Kick(bot))

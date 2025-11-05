@@ -17,5 +17,5 @@ class MemberCount(commands.Cog):
         await ctx.send(embed=MemberCountEmbed)
 
 # Add the cog to the bot
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(MemberCount(bot))

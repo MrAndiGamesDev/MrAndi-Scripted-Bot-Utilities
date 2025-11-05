@@ -27,5 +27,5 @@ class Purge(commands.Cog):
         except discord.HTTPException:
             await ctx.send("An error occurred while trying to delete messages.")
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Purge(bot))

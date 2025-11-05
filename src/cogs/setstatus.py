@@ -73,5 +73,5 @@ class SetStatus(commands.Cog):
         except Exception as e:
             await ctx.send(f"❌ An error occurred: {str(e)}")
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(SetStatus(bot))

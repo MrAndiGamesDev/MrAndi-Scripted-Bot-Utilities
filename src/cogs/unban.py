@@ -51,5 +51,5 @@ class Unban(commands.Cog):
         except ValueError:
             await ctx.send("Please provide a valid username or username#discriminator")
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Unban(bot))

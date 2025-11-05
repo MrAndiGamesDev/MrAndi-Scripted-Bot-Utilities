@@ -19,5 +19,5 @@ class Roll(commands.Cog):
         )
         await ctx.send(embed=RollEmbed)
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Roll(bot))

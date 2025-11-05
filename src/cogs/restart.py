@@ -21,5 +21,5 @@ class Restart(commands.Cog):
         await self.bot.close()
         os.execv(sys.executable, ['python'] + sys.argv)
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Restart(bot))

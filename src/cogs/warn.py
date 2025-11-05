@@ -53,5 +53,5 @@ class WarnSystem(commands.Cog):
         await ctx.send(f"Cleared all warnings for {member.mention}.")
 
 # Add the cog to the bot
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(WarnSystem(bot))

@@ -66,5 +66,5 @@ class ModMail(commands.Cog):
             await ctx.send("An error occurred while processing your request.")
 
 # Add the cog to the bot
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(ModMail(bot))

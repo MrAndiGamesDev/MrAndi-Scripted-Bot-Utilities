@@ -59,5 +59,5 @@ class Giveaway(commands.Cog):
         # Remove from active giveaways
         del self.active_giveaways[message.id]
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Giveaway(bot))
