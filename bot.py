@@ -1,21 +1,11 @@
 import os
-import json
 import datetime
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from src.modules.load_config import load_config
 
 load_dotenv()
-
-def load_config(path: str = 'config.json') -> dict:
-    """Load and return the bot configuration from a JSON file."""
-    try:
-        with open(path, encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise RuntimeError(f"Configuration file '{path}' not found.")
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"Invalid JSON in '{path}': {e}")
 
 config = load_config()
 
@@ -52,7 +42,7 @@ async def on_ready():
     await bot.change_presence(
         activity=discord.Activity(
             type=discord.ActivityType.watching,
-            name="Use | !help"
+            name=f"Use {config['Prefix']}help"
         ),
         status=discord.Status.online
     )
