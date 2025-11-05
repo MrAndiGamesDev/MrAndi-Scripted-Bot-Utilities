@@ -109,8 +109,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--venv",
         type=str,
-        default="Sigma-Auto-Clicker-Packages",
-        help="Path to the virtual environment directory (default: Sigma-Auto-Clicker-Packages)",
+        default="MrAndi-Scripted-Utilites-Packages",
+        help="Path to the virtual environment directory (default: MrAndi-Scripted-Utilites-Packages)",
     )
     parser.add_argument(
         "--requirements",

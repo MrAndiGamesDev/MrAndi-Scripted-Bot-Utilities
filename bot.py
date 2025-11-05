@@ -3,7 +3,11 @@ import datetime
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from src.modules.load_config import load_config
+
+try:
+    from src.modules.load_config import load_config
+except ImportError:
+    from modules.load_config import load_config
 
 load_dotenv()
 
