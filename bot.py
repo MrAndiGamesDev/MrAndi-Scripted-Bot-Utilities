@@ -1,4 +1,3 @@
-import sys
 import datetime
 import os
 import discord
@@ -9,11 +8,13 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 try:
-    from src.modules.set_mobile import Socket
     from src.modules.load_config import load_config
+    from src.private.set_identify import Mobile
+    from src.private.set_identify import PC
 except ImportError:
-    from modules.set_mobile import Socket
     from modules.load_config import load_config
+    from private.set_identify import Mobile
+    from private.set_identify import PC
 
 class Bot(commands.Bot):
     def __init__(self, config: dict) -> None:
@@ -24,33 +25,31 @@ class Bot(commands.Bot):
 
         super().__init__(command_prefix=config["Prefix"], intents=intents)
         self.remove_command("help")
-        DiscordWebSocket.identify = Socket.identify
+        DiscordWebSocket.identify = Mobile.identify
 
     async def setup_hook(self) -> None:
         await self.load_all_cogs()
         await self.send_status("Bot is now online! 🟢", discord.Color.green())
+        
         # Ensure the client is ready before calling change_presence
         if self.is_ready():
-            await self.change_presence(
-                activity=discord.Activity(
-                    type=discord.ActivityType.watching,
-                    name=f"Use {self._config['Prefix']}help"
-                ),
-                status=discord.Status.online
-            )
+            self.change_presence_status()
         else:
             # Defer change_presence to on_ready if not ready yet
             self.loop.create_task(self._deferred_change_presence())
 
     async def _deferred_change_presence(self) -> None:
         await self.wait_until_ready()
+        await self.change_presence_status()
+
+    async def change_presence_status(self) -> None:
         await self.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=f"Use {self._config['Prefix']}help"
-            ),
-            status=discord.Status.online
-        )
+                activity=discord.Activity(
+                    type=discord.ActivityType.watching,
+                    name=f"Need any Help with the bot? Just Use {self._config['Prefix']}help"
+                ),
+                status=discord.Status.online
+            )
 
     async def load_all_cogs(self) -> None:
         cog_dir = Path(__file__).parent / "src" / "cogs"
@@ -82,27 +81,34 @@ class Bot(commands.Bot):
 
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send("❌ Command not found! Use !help to see available commands.")
+            await ctx.send(f"❌ Command not found! Use {self._config["Prefix"]}help to see available commands.")
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ You don't have permission to use this command!")
+            await ctx.send(f"❌ You don't have permission to use this command! Use {self._config['Prefix']}help to see available commands.")
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Missing required argument! Please check command usage with !help.")
+            await ctx.send(f"❌ Missing required argument! Please check command usage with {self._config['Prefix']}help.")
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Invalid argument provided! Please check command usage with !help.")
+            await ctx.send(f"❌ Invalid argument provided! Please check command usage with {self._config['Prefix']}help.")
         else:
             await ctx.send(f"❌ An error occurred: {error}")
             print(f"Unhandled error: {error}")
 
+class BotStarter:
+    def __init__(self) -> None:
+        load_dotenv()
+        self.config = load_config()
+        self.token = os.getenv("TOKEN")
+        if not self.token:
+            raise ValueError("No TOKEN found in environment variables")
+
+    def run(self) -> None:
+        bot = Bot(self.config)
+        try:
+            bot.run(self.token)
+        except discord.LoginFailure:
+            print("Failed to login: Invalid token")
+        except Exception as e:
+            print(f"Error running bot: {e}")
+
 if __name__ == "__main__":
-    load_dotenv()
-    config = load_config()
-    token = os.getenv("TOKEN")
-    if not token:
-        raise ValueError("No token found in .env file")
-    bot = Bot(config)
-    try:
-        bot.run(token)
-    except discord.LoginFailure:
-        print("Failed to login: Invalid token")
-    except Exception as e:
-        print(f"Error running bot: {e}")
+    BotLauncher = BotStarter()
+    BotLauncher.run()
