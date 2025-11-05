@@ -88,11 +88,19 @@ class VirtualEnvManager:
         logger.info("Checking for outdated packages...")
         try:
             result = subprocess.run(
-                [str(self.venv_python), "-m", "pip", "list", "--outdated", "--format=freeze"],
+                [str(self.venv_python), "-m", "pip", "list", "--outdated", "--not-required"],
                 capture_output=True,
-                text=True,
-                check=True
+                text=True
             )
+            if result.returncode != 0:
+                # pip list --outdated exits with 1 when no outdated packages exist in newer pip versions
+                if result.stderr and "non-zero exit status" in result.stderr:
+                    logger.info("All packages are up to date.")
+                    return True
+                else:
+                    logger.error(f"Failed to check for outdated packages: {result.stderr}")
+                    return False
+
             outdated = result.stdout.strip()
             if outdated:
                 logger.info("Outdated packages found:\n" + outdated)
@@ -100,9 +108,6 @@ class VirtualEnvManager:
             else:
                 logger.info("All packages are up to date.")
             return True
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to check for outdated packages: {e}")
-            return False
         except Exception as e:
             logger.error(f"Unexpected error while checking updates: {e}")
             return False
