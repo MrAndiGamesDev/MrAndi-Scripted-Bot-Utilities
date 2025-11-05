@@ -1,3 +1,5 @@
+import os
+import signal
 import discord
 from discord.ext import commands
 
@@ -15,6 +17,8 @@ class Shutdown(commands.Cog):
         )
         await ctx.send(embed=embed)
         await self.bot.close()
+        # Forcefully terminate the entire Python process
+        os.kill(os.getpid(), signal.SIGTERM)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Shutdown(bot))

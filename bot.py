@@ -14,14 +14,6 @@ except ImportError:
     from modules.load_config import load_config
     from private.set_identify import Mobile, PC
 
-class StatusUpdater:
-    """Handles all status-related messaging for the bot."""
-    def __init__(self, bot: "Bot") -> None:
-        self.bot = bot
-        
-    async def cog_error(self, name: str, exc: Exception) -> None:
-        await self.send(f"Error loading cog {name}: {exc} ⚠️", discord.Color.orange())
-
 class Bot(commands.Bot):
     def __init__(self, config: dict) -> None:
         self._Is_Mobile = True
@@ -33,7 +25,6 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=config["Prefix"], intents=intents)
         self.remove_command("help")
         DiscordWebSocket.identify = self.IsMobile()
-        self.status_updater = StatusUpdater(self)
 
     def IsMobile(self) -> bool:
         if self._Is_Mobile == True:
@@ -79,7 +70,6 @@ class Bot(commands.Bot):
             print(f"Loaded cog: {name}")
         for name, exc in failed:
             print(f"Failed to load cog {name}: {exc}")
-            await self.status_updater.cog_error(name, exc)
 
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.CommandNotFound):
