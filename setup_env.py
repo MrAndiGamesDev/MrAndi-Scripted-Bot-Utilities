@@ -49,6 +49,19 @@ class VirtualEnvManager:
             "Failed to create virtual environment"
         )
 
+    def upgrade_pip(self) -> bool:
+        """Upgrade pip to the latest version in the virtual environment."""
+        if not self.venv_python.exists():
+            logger.error(f"Virtual environment Python executable not found at {self.venv_python}")
+            return False
+
+        logger.info("Checking and upgrading pip to the latest version...")
+        return self._run_subprocess(
+            [str(self.venv_python), "-m", "pip", "install", "--upgrade", "pip"],
+            "Pip upgraded successfully",
+            "Failed to upgrade pip"
+        )
+
     def install_requirements(self) -> bool:
         """Install requirements from the requirements file if it exists."""
         if not self.requirements_file.exists():
@@ -66,15 +79,47 @@ class VirtualEnvManager:
             "Failed to install requirements"
         )
 
+    def check_package_updates(self) -> bool:
+        """Check for outdated packages in the virtual environment."""
+        if not self.venv_python.exists():
+            logger.error(f"Virtual environment Python executable not found at {self.venv_python}")
+            return False
+
+        logger.info("Checking for outdated packages...")
+        try:
+            result = subprocess.run(
+                [str(self.venv_python), "-m", "pip", "list", "--outdated", "--format=freeze"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            outdated = result.stdout.strip()
+            if outdated:
+                logger.info("Outdated packages found:\n" + outdated)
+                logger.info("Run 'pip install --upgrade <package>' to update individual packages.")
+            else:
+                logger.info("All packages are up to date.")
+            return True
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to check for outdated packages: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error while checking updates: {e}")
+            return False
+
     def manage_venv(self) -> bool:
-        """Manage the virtual environment: create and install packages."""
+        """Manage the virtual environment: create, upgrade pip, install packages, and check updates."""
         if not self.venv_path.exists():
             logger.info("Virtual environment not found. Setting up environment...")
             if not self.setup_venv():
                 return False
 
-        logger.info("Virtual environment detected. Proceeding with package installation...")
+        logger.info("Virtual environment detected. Proceeding with pip upgrade and package installation...")
+        if not self.upgrade_pip():
+            return False
         if not self.install_requirements():
+            return False
+        if not self.check_package_updates():
             return False
 
         # Provide instructions for manual activation
