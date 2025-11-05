@@ -53,9 +53,9 @@ async def on_ready():
 
     async def load_extensions_from_directory(directory: str, extension_type: str) -> None:
         try:
-            for filename in os.listdir(f'./{directory}'):
+            for filename in os.listdir(f'./src/{directory}'):
                 if filename.endswith('.py'):
-                    extension_name = f'{directory}.{filename[:-3]}'
+                    extension_name = f'src.{directory}.{filename[:-3]}'
                     await bot.load_extension(extension_name)
                     print(f'Loaded {extension_type}: {filename[:-3]}')
         except Exception as e:
