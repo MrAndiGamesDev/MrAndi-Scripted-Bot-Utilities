@@ -9,7 +9,8 @@ class Say(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def say(self, ctx, channel: discord.TextChannel, *, message: str):
         """Make the bot say something in the specified channel."""
-        await channel.send(message)
+        async with channel.typing():
+            await channel.send(message)
 
 async def setup(bot):
     await bot.add_cog(Say(bot))
