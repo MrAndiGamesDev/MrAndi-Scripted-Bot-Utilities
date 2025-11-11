@@ -13,6 +13,7 @@ class HelpCog(commands.Cog):
     COMMANDS_INFO: Dict[str, str] = {
         "avatar": "Displays the avatar of a user.",
         "ban": "Bans a member from the server.",
+        "dm": "Make the bot say something in dms.",
         "joke": "Fetches a random meme.",
         "getbadge": "Provides information about getting the Active Developer Badge",
         "giveaway": "Start a giveaway. Time is in minutes.",
@@ -44,7 +45,7 @@ class HelpCog(commands.Cog):
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes"],
-        "admin": ["restart", "shutdown", "setstatus", "say", "giveaway", "tempRole", "modmail", "getbadge"],
+        "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "tempRole", "modmail", "getbadge"],
     }
 
     def __init__(self, bot: commands.Bot):
