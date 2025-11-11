@@ -9,6 +9,7 @@ class DMCog(commands.Cog):
 
     @commands.command(name="dm")
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def dm(self, ctx: commands.Context, member: discord.Member, *, message: str):
         """Send a direct message to a specified user."""
         try:
