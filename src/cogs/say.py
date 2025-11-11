@@ -11,7 +11,7 @@ class Say(commands.Cog):
         """Make the bot say something in the specified channel."""
         async with channel.typing():
             await channel.send(message)
-        await ctx.reply("Message sent!")
+        await ctx.reply("✅Message sent!")
 
 async def setup(bot):
     await bot.add_cog(Say(bot))

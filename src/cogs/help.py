@@ -129,7 +129,7 @@ class HelpCog(commands.Cog):
                 embed = self._build_category_embed(prefix, query)
             else:
                 embed = self._build_not_found_embed(prefix, query)
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed, mention_author=False)
             return
 
         # Split commands into chunks and send the first one with pagination
@@ -138,10 +138,10 @@ class HelpCog(commands.Cog):
         total_pages = len(chunks)
         first_embed = self._build_main_help_embed(prefix, chunks[0], 1, total_pages)
         if total_pages == 1:
-            await ctx.send(embed=first_embed)
+            await ctx.reply(embed=first_embed, mention_author=False)
             return
 
-        message = await ctx.send(embed=first_embed)
+        message = await ctx.reply(embed=first_embed, mention_author=False)
         await message.add_reaction("⬅️")
         await message.add_reaction("➡️")
 
