@@ -30,6 +30,7 @@ class HelpCog(commands.Cog):
         "replymodmail": "Reply to a message sent to the moderators via DM.",
         "restart": "Restarts the Discord bot.",
         "roll": "Rolls a die with a specified number of sides.",
+        "say": "Make the bot say something in the specified channel.",
         "setstatus": "Sets the bot's status message.",
         "shutdown": "Shuts down the bot.",
         "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
@@ -43,7 +44,7 @@ class HelpCog(commands.Cog):
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes"],
-        "admin": ["restart", "shutdown", "setstatus", "giveaway", "tempRole", "modmail", "getbadge"],
+        "admin": ["restart", "shutdown", "setstatus", "say", "giveaway", "tempRole", "modmail", "getbadge"],
     }
 
     def __init__(self, bot: commands.Bot):
