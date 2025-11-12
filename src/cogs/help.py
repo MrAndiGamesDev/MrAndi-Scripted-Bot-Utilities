@@ -3,7 +3,7 @@ from discord.ext import commands
 from typing import Dict, List, Optional
 
 try:
-    from src.modules.load_config import load_config
+    from src.modules.load_config import JsonLoader
 except ImportError:
     raise
 
@@ -55,7 +55,7 @@ class HelpCog(commands.Cog):
     @staticmethod
     def _get_prefix() -> str:
         """Load prefix from config once per invocation."""
-        return load_config()["Prefix"]
+        return JsonLoader().load()["Prefix"]
 
     @staticmethod
     def _chunk_items(items: List[tuple], chunk_size: int = 5) -> List[List[tuple]]:
@@ -112,10 +112,12 @@ class HelpCog(commands.Cog):
         )
         for cmd, desc in chunk:
             embed.add_field(name=f"{prefix}{cmd}", value=desc, inline=False)
-        embed.set_footer(
-            text=f"Page {page}/{total_pages} | Type {prefix}help <command> for details on a specific command.\n"
-                 f"Use {prefix}help <moderation, fun, utility, admin> to explore command categories."
-        )
+        footer_lines = [
+            f"Page {page}/{total_pages} | Type {prefix}help <command> for details on a specific command.",
+            f"Use {prefix}help <moderation, fun, utility, admin> to explore command categories."
+        ]
+        footer_text = "\n".join(line for line in footer_lines)
+        embed.set_footer(text=footer_text)
         return embed
 
     @commands.command(name="help", aliases=["commands"])

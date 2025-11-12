@@ -11,15 +11,18 @@ class Restart(commands.Cog):
     @commands.is_owner()
     async def restart(self, ctx):
         """Restart the bot."""
-        embed = discord.Embed(
-            title="Restarting bot...",
-            description="The bot is restarting now.",
-            color=discord.Color.purple()
-        )
-        await ctx.send(embed=embed)
-        # Schedule the actual restart after the message is sent
-        await self.bot.close()
-        os.execv(sys.executable, ['python'] + sys.argv)
+        try:
+            embed = discord.Embed(
+                title="Restarting bot...",
+                description="The bot is restarting now.",
+                color=discord.Color.purple()
+            )
+            await ctx.send(embed=embed)
+            # Schedule the actual restart after the message is sent
+            await self.bot.close()
+            os.execv(sys.executable, ['python'] + sys.argv)
+        except Exception as e:
+            await ctx.send(f"Failed to restart: {e}")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Restart(bot))

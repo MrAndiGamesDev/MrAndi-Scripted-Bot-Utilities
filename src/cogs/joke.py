@@ -2,7 +2,7 @@ import random
 from discord.ext import commands
 
 try:
-    from src.modules.load_config import load_config
+    from src.modules.load_config import JsonLoader
 except ImportError:
     # fallback or re-raise as needed
     raise
@@ -10,7 +10,7 @@ except ImportError:
 class Joke(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = load_config()
+        self.config = JsonLoader().load()
         self.jokes = self.config["jokes"]
 
     @commands.command(name="joke")
