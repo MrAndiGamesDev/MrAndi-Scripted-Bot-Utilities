@@ -18,7 +18,6 @@ class Lockdown(commands.Cog):
 
             # Send a confirmation message
             await ctx.send(f"The channel {channel.mention} has been locked. No one can send messages here.")
-
         except discord.Forbidden:
             await ctx.send("I don't have permission to edit this channel's settings.")
         except discord.HTTPException as e:

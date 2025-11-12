@@ -4,7 +4,7 @@ class Getbadge(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command()
+    @commands.command(name="getbadge", aliases=["badge"])
     async def getbadge(self, ctx):
         """Provides information about getting the Active Developer Badge"""
         messages = [

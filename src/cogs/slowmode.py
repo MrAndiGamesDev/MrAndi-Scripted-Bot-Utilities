@@ -1,6 +1,6 @@
+import re
 import discord
 from discord.ext import commands
-import re
 
 class Slowmode(commands.Cog):
     def __init__(self, bot):

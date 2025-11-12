@@ -15,7 +15,6 @@ class Kick(commands.Cog):
         if member.top_role >= ctx.author.top_role:
             await ctx.send("You cannot kick someone with a higher or equal role!")
             return
-            
         try:
             await member.kick(reason=reason)
             embed = discord.Embed(

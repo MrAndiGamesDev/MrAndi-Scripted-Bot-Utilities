@@ -7,7 +7,7 @@ class Shutdown(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
     
-    @commands.command(name="shutdown")
+    @commands.command(name="shutdown", aliases=["die"])
     @commands.is_owner()
     async def shutdown(self, ctx: commands.Context) -> None:
         embed = discord.Embed(

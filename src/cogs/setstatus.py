@@ -15,7 +15,6 @@ class SetStatus(commands.Cog):
             'listening': discord.ActivityType.listening,
             'streaming': discord.ActivityType.streaming
         }
-
         # Map status states
         status_states = {
             'online': discord.Status.online,
@@ -23,14 +22,12 @@ class SetStatus(commands.Cog):
             'dnd': discord.Status.dnd,
             'offline': discord.Status.offline
         }
-
         # Check if status type is valid
         status_type = status_type.lower()
         if status_type == 'status':
             if not status_state or status_state.lower() not in status_states:
                 await ctx.send("❌ Invalid status state! Use 'online', 'idle', 'dnd' or 'offline'")
                 return
-            
             try:
                 await self.bot.change_presence(status=status_states[status_state.lower()])
                 embed = discord.Embed(
@@ -40,19 +37,15 @@ class SetStatus(commands.Cog):
                 )
                 await ctx.send(embed=embed)
                 return
-                
             except Exception as e:
                 await ctx.send(f"❌ An error occurred: {str(e)}")
                 return
-
         if status_type not in activity_types:
             await ctx.send("❌ Invalid status type! Use 'playing', 'watching', 'listening', 'streaming' or 'status'")
             return
-
         if not status_text:
             await ctx.send("❌ Please provide status text!")
             return
-
         try:
             await self.bot.change_presence(
                 activity=discord.Activity(
@@ -60,14 +53,12 @@ class SetStatus(commands.Cog):
                     name=status_text
                 )
             )
-            
             embed = discord.Embed(
                 title="Status Updated",
                 description=f"Bot status changed to: {status_type.title()} {status_text}",
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
-            
         except discord.InvalidArgument:
             await ctx.send("❌ Failed to set status: Invalid arguments provided")
         except Exception as e:

@@ -117,7 +117,7 @@ class HelpCog(commands.Cog):
         )
         return embed
 
-    @commands.command(name="help")
+    @commands.command(name="help", aliases=["commands"])
     async def help_command(self, ctx: commands.Context, *, query: Optional[str] = None):
         """Display help for commands and categories."""
         prefix = self._get_prefix()

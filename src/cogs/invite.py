@@ -5,7 +5,7 @@ class Invite(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="invite")
+    @commands.command(name="invite", aliases=["inv"])
     async def invite(self, ctx):
         """Generates and sends an invite link to the server."""
         try:

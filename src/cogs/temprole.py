@@ -1,6 +1,6 @@
-import discord
-from discord.ext import commands, tasks
 import asyncio
+import discord
+from discord.ext import commands
 
 class TempRole(commands.Cog):
     def __init__(self, bot):

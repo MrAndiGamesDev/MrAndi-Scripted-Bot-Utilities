@@ -7,7 +7,7 @@ class DMCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="dm")
+    @commands.command(name="dm", aliases=["directmessage"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def dm(self, ctx: commands.Context, member: discord.Member, *, message: str):

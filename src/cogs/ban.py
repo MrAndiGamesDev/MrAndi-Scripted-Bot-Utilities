@@ -15,7 +15,6 @@ class Ban(commands.Cog):
         if member.top_role >= ctx.author.top_role:
             await ctx.send("You cannot ban someone with a higher or equal role!")
             return
-            
         try:
             await member.ban(reason=reason)
             embed = discord.Embed(

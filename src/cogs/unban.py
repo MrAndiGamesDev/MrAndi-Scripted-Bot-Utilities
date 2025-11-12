@@ -12,10 +12,8 @@ class Unban(commands.Cog):
         try:
             # Get the list of banned users
             banned_users = [entry async for entry in ctx.guild.bans()]
-            
             # Parse the member input (expecting either "name#discriminator" or just "name")
             member_name, member_discriminator = member.split('#') if '#' in member else (member, None)
-
             # Find the banned user
             banned_member = None
             for ban_entry in banned_users:
@@ -28,14 +26,11 @@ class Unban(commands.Cog):
                     if user.name == member_name:
                         banned_member = user
                         break
-
             if banned_member is None:
                 await ctx.send(f"Could not find banned user {member}")
                 return
-
             # Unban the user
             await ctx.guild.unban(banned_member)
-            
             # Create and send embed
             embed = discord.Embed(
                 title="Member Unbanned",
@@ -43,7 +38,6 @@ class Unban(commands.Cog):
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
-
         except discord.Forbidden:
             await ctx.send("I don't have permission to unban members!")
         except discord.HTTPException:

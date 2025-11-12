@@ -8,10 +8,10 @@ from pathlib import Path
 
 try:
     from src.modules.load_config import load_config
-    from src.private.set_identify import Mobile, PC
+    from src.events.set_identify import Mobile, PC
 except ImportError:
     from modules.load_config import load_config
-    from private.set_identify import Mobile, PC
+    from events.set_identify import Mobile, PC
 
 class Bot(commands.Bot):
     def __init__(self, config: dict) -> None:
@@ -83,7 +83,7 @@ class Bot(commands.Bot):
             await ctx.send(f"❌ An error occurred: {error}")
             print(f"Unhandled error: {error}")
 
-class BotStarter:
+class Launcher:
     def __init__(self) -> None:
         load_dotenv()
         self.config = load_config()
@@ -101,5 +101,5 @@ class BotStarter:
             print(f"Error running bot: {e}")
 
 if __name__ == "__main__":
-    BotLauncher = BotStarter()
+    BotLauncher = Launcher()
     BotLauncher.run()

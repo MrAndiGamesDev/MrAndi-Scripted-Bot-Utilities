@@ -26,7 +26,7 @@ class NoteCog(commands.Cog):
             embed = discord.Embed(
                 title="Your Notes",
                 description="You have no notes.",
-                color=discord.Color.blue()
+                color=discord.Color.purple()
             )
             await ctx.send(embed=embed)
         else:
@@ -35,7 +35,7 @@ class NoteCog(commands.Cog):
             embed = discord.Embed(
                 title="Your Notes",
                 description=notes_list,
-                color=discord.Color.blue()
+                color=discord.Color.purple()
             )
             await ctx.send(embed=embed)
 

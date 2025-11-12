@@ -44,7 +44,7 @@ class WarnSystem(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="clearwarnings")
+    @commands.command(name="clearwarnings", aliases=["clearwarn"])
     @commands.has_permissions(manage_messages=True)
     async def clear_warnings(self, ctx, member: discord.Member):
         """Clears all warnings for a member."""
