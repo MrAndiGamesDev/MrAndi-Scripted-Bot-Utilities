@@ -30,6 +30,7 @@ class HelpCog(commands.Cog):
         "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
         "replymodmail": "Reply to a message sent to the moderators via DM.",
         "restart": "Restarts the Discord bot.",
+        "rblxfollowercount": "Fetches the Roblox follower count for a given user ID.",
         "roll": "Rolls a die with a specified number of sides.",
         "say": "Make the bot say something in the specified channel.",
         "setstatus": "Sets the bot's status message.",
@@ -43,7 +44,7 @@ class HelpCog(commands.Cog):
 
     CATEGORIES: Dict[str, List[str]] = {
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
-        "fun": ["joke", "rps", "roll"],
+        "fun": ["joke", "rps", "roll", "rblxfollowercount"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes"],
         "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "tempRole", "modmail", "getbadge"],
     }

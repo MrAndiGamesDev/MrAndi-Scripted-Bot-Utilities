@@ -9,7 +9,7 @@ def load_config(path: str = 'config.json') -> Dict[str, Any]:
     if not config_path.is_file():
         raise RuntimeError(f"Configuration file '{config_path}' not found.")
     try:
-        with config_path.open(encoding='utf-8') as f:
-            return json.load(f)
+        with config_path.open(encoding='utf-8') as file:
+            return json.load(file)
     except json.JSONDecodeError as e:
         raise RuntimeError(f"Invalid JSON in '{config_path}': {e}")

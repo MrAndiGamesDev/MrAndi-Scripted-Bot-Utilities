@@ -12,7 +12,6 @@ class Purge(commands.Cog):
         if amount <= 0:
             await ctx.send("Please specify a positive number of messages to delete!")
             return
-            
         try:
             deleted = await ctx.channel.purge(limit=amount + 1)  # +1 to include command message
             embed = discord.Embed(
