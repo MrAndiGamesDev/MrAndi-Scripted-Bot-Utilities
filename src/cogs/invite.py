@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 
 class Invite(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="invite", aliases=["inv"])
-    async def invite(self, ctx):
+    async def invite(self, ctx: commands.Context):
         """Generates and sends an invite link to the server."""
         try:
             # Check if the bot has permission to create invites

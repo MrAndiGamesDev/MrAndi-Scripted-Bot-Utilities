@@ -8,27 +8,34 @@ from pathlib import Path
 
 try:
     from src.modules.load_config import JsonLoader
-    from src.modules.set_identify import Mobile
+    from src.modules.set_identify import GetIdentify
 except ImportError:
     from modules.load_config import JsonLoader
-    from modules.set_identify import Mobile
+    from modules.set_identify import GetIdentify
 
 class Bot(commands.Bot):
     def __init__(self, config: dict) -> None:
         self._Is_Mobile = True
-        self._config = config or JsonLoader().load()
+        self.jsonloader = JsonLoader()
+        self._config = config or self.jsonloader.load()
+
         intents = discord.Intents.default()
         intents.message_content = True
         intents.typing = True
+
         super().__init__(command_prefix=config["Prefix"], intents=intents)
 
         # Remove default help command
         self.remove_command("help")
 
         # Set identify to mobile by default
-        DiscordWebSocket.identify = Mobile.identify
+        DiscordWebSocket.identify = self.get_identify()
+
+    def get_identify(self) -> GetIdentify:
+        return GetIdentify.set_identify_to_mobile if self._Is_Mobile else GetIdentify.set_identify_to_pc
 
     async def setup_hook(self) -> None:
+        # Ensure the client is ready before calling bot events/commands
         await self.load_all_cogs()
         await self.load_all_events()
         # Ensure the client is ready before calling change_presence
@@ -45,7 +52,7 @@ class Bot(commands.Bot):
     async def change_presence_status(self) -> None:
         activity = discord.Activity(
             type=discord.ActivityType.watching,
-            name=f"Need any Help with the bot? Just Use {self._config['Prefix']}help"
+            name=f"{self._config['Prefix']}help (If need any help with the bot)"
         )
         await self.change_presence(activity=activity, status=discord.Status.online)
 
@@ -86,15 +93,19 @@ class Bot(commands.Bot):
 class Launcher:
     def __init__(self) -> None:
         load_dotenv()
-        self.config = JsonLoader().load()
+        self.jsonloader = JsonLoader()
+        self.config = self.jsonloader.load()
         self.token = os.getenv("TOKEN")
+
+    def get_token(self) -> str:
         if not self.token:
             raise ValueError("No TOKEN found in environment variables")
+        return self.token
 
     def run(self) -> None:
         bot = Bot(self.config)
         try:
-            bot.run(self.token)
+            bot.run(self.get_token())
         except discord.LoginFailure:
             print("Failed to login: Invalid token")
         except Exception as e:

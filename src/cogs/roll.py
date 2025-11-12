@@ -3,11 +3,11 @@ import discord
 from discord.ext import commands
 
 class Roll(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
-    async def roll(self, ctx, sides: int):
+    async def roll(self, ctx: commands.Context, sides: int):
         if sides < 1:
             await ctx.send("Please provide a number greater than 0.")
             return

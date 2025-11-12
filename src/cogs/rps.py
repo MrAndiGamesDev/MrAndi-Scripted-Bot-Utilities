@@ -2,11 +2,11 @@ import random
 from discord.ext import commands
 
 class RPS(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
-    async def rps(self, ctx, choice: str):
+    async def rps(self, ctx: commands.Context, choice: str):
         """Play a game of rock-paper-scissors. Choices: rock, paper, scissors"""
         choices = ["rock", "paper", "scissors"]
         bot_choice = random.choice(choices)

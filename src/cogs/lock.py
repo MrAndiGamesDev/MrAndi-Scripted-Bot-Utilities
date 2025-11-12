@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class Lockdown(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="lock")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
-    async def lock_channel(self, ctx):
+    async def lock_channel(self, ctx: commands.Context):
         """Locks the channel so that no one can send messages."""
         try:
             # Get the current channel
@@ -25,7 +25,7 @@ class Lockdown(commands.Cog):
 
     @commands.command(name="unlock")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
-    async def unlock_channel(self, ctx):
+    async def unlock_channel(self, ctx: commands.Context):
         """Unlocks the channel so that everyone can send messages again."""
         try:
             # Get the current channel
@@ -43,7 +43,7 @@ class Lockdown(commands.Cog):
             await ctx.send(f"Failed to unlock the channel: {e}")
 
     @lock_channel.error
-    async def lock_error(self, ctx, error):
+    async def lock_error(self, ctx: commands.Context, error):
         """Handles errors related to the lock command."""
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You do not have the required permissions to manage channels.")
@@ -51,7 +51,7 @@ class Lockdown(commands.Cog):
             await ctx.send("An unexpected error occurred while processing the command.")
 
     @unlock_channel.error
-    async def unlock_error(self, ctx, error):
+    async def unlock_error(self, ctx: commands.Context, error):
         """Handles errors related to the unlock command."""
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You do not have the required permissions to manage channels.")

@@ -4,13 +4,13 @@ import discord
 from discord.ext import commands
 
 class Giveaway(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.active_giveaways = {}
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def giveaway(self, ctx, time: int, *, prize: str):
+    async def giveaway(self, ctx: commands.Context, time: int, *, prize: str):
         """Start a giveaway. Time is in minutes."""
         
         # Create embed

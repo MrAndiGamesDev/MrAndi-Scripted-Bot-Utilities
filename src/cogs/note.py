@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class NoteCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.notes = {}
 
     @commands.command()
-    async def note(self, ctx, *, content: str):
+    async def note(self, ctx: commands.Context, *, content: str):
         """Adds a personal note."""
         if ctx.author.id not in self.notes:
             self.notes[ctx.author.id] = []
@@ -20,7 +20,7 @@ class NoteCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def notes(self, ctx):
+    async def notes(self, ctx: commands.Context):
         """Displays your personal notes."""
         if ctx.author.id not in self.notes or not self.notes[ctx.author.id]:
             embed = discord.Embed(
@@ -40,7 +40,7 @@ class NoteCog(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def clearnotes(self, ctx):
+    async def clearnotes(self, ctx: commands.Context):
         """Clears all your personal notes."""
         self.notes[ctx.author.id] = []
         embed = discord.Embed(

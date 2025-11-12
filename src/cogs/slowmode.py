@@ -3,12 +3,12 @@ import discord
 from discord.ext import commands
 
 class Slowmode(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="slowmode")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
-    async def set_slowmode(self, ctx, time: str):
+    async def set_slowmode(self, ctx: commands.Context, time: str):
         """Sets slowmode for the channel in seconds, minutes, or hours."""
         time_in_seconds = self.convert_to_seconds(time)
 
@@ -51,7 +51,7 @@ class Slowmode(commands.Cog):
         return None
 
     @set_slowmode.error
-    async def slowmode_error(self, ctx, error):
+    async def slowmode_error(self, ctx: commands.Context, error):
         """Handles errors related to the slowmode command."""
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You do not have the required permissions to manage channels.")

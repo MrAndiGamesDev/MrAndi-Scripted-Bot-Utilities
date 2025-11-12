@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 
 class MemberCount(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="membercount", aliases=["mc"])
-    async def membercount(self, ctx):
+    async def membercount(self, ctx: commands.Context):
         """Displays the number of members in the server."""
         member_count = ctx.guild.member_count
         MemberCountEmbed = discord.Embed(

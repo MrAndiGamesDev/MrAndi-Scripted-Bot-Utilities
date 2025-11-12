@@ -21,6 +21,7 @@ class HelpCog(commands.Cog):
         "kick": "Kicks a member from the server.",
         "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
         "membercount": "Displays the number of members in the server.",
+        "meme": "Fetches a random meme.",
         "modmail": "Send/reply to a message to/from the moderators via DM.",
         "note": "Adds a personal note.",
         "notes": "Displays your personal notes.",
@@ -44,8 +45,8 @@ class HelpCog(commands.Cog):
 
     CATEGORIES: Dict[str, List[str]] = {
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
-        "fun": ["joke", "rps", "roll", "rblxfollowercount"],
-        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes"],
+        "fun": ["joke", "rps", "roll", "meme"],
+        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount"],
         "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "tempRole", "modmail", "getbadge"],
     }
 

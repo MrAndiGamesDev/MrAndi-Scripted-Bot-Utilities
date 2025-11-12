@@ -1,17 +1,16 @@
-import json
 import discord
 from discord.ext import commands
-
-with open('config.json') as f:
-    config = json.load(f)
+from src.modules.load_config import JsonLoader
 
 class ModMail(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.mod_channel_id = config["ModChannelID"]  # Channel ID where moderators will receive messages
+        self.jsonloader = JsonLoader()
+        self.config = self.jsonloader.load()
+        self.mod_channel_id = self.config["ModChannelID"]  # Channel ID where moderators will receive messages
 
     @commands.command(name="modmail")
-    async def modmail(self, ctx, *, message: str):
+    async def modmail(self, ctx: commands.Context, *, message: str):
         """Send a message to the moderators via DM."""
         if not message:
             await ctx.send("Please provide a message for the moderators.")
@@ -38,7 +37,7 @@ class ModMail(commands.Cog):
 
     @commands.command(name="replymodmail")
     @commands.has_permissions(administrator=True)
-    async def reply_modmail(self, ctx, user: discord.User, *, reply_message: str):
+    async def reply_modmail(self, ctx: commands.Context, user: discord.User, *, reply_message: str):
         """Reply to a user's modmail via DM."""
         if not reply_message:
             await ctx.send("Please provide a reply message.")
@@ -56,7 +55,7 @@ class ModMail(commands.Cog):
             await ctx.send(f"Failed to send reply: {e}")
 
     @modmail.error
-    async def modmail_error(self, ctx, error):
+    async def modmail_error(self, ctx: commands.Context, error):
         """Handles errors that occur in modmail commands."""
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You do not have permission to use this command.")

@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class Purge(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, amount: int):
+    async def purge(self, ctx: commands.Context, amount: int):
         """Purges a specified number of messages from the channel."""
         if amount <= 0:
             await ctx.send("Please specify a positive number of messages to delete!")

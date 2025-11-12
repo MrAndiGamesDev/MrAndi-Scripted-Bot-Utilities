@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class SetStatus(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @commands.is_owner()
-    async def setstatus(self, ctx, status_type: str, status_state: str = None, *, status_text: str = None):
+    async def setstatus(self, ctx: commands.Context, status_type: str, status_state: str = None, *, status_text: str = None):
         # Map status types to ActivityType
         activity_types = {
             'playing': discord.ActivityType.playing,

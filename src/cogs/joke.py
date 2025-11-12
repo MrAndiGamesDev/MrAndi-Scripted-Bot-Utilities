@@ -8,13 +8,14 @@ except ImportError:
     raise
 
 class Joke(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.config = JsonLoader().load()
+        self.jsonloader = JsonLoader()
+        self.config = self.jsonloader.load()
         self.jokes = self.config["jokes"]
 
     @commands.command(name="joke")
-    async def joke(self, ctx):
+    async def joke(self, ctx: commands.Context):
         """Sends a random joke."""
         joke = random.choice(self.jokes)  # Pick a random joke
         await ctx.send(joke)

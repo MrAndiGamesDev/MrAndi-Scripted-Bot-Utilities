@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class Ban(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         """Bans a member from the server."""
         if member == ctx.author:
             await ctx.send("You cannot ban yourself!")

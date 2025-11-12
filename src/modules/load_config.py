@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 class JsonLoader:
     def __init__(self, path: str = 'config.json') -> None:
-        self.path: Optional[str] = path
+        self.path: Optional[str, Path] = path
         self.config: Optional[Dict[str, Any]] = self.load()
         
     def load(self) -> Dict[str, Any]:

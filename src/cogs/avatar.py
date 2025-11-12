@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 
 class Avatar(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="avatar", aliases=["av"])
-    async def avatar(self, ctx, user: discord.User = None):
+    async def avatar(self, ctx: commands.Context, user: discord.User = None):
         """Displays the avatar of a user."""
         user = user or ctx.author  # If no user is provided, use the command author's avatar
 

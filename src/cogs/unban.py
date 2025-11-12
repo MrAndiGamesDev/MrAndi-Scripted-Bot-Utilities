@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class Unban(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member):
+    async def unban(self, ctx: commands.Context, *, member):
         """Unbans a member from the server."""
         try:
             # Get the list of banned users

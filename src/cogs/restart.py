@@ -4,12 +4,12 @@ import discord
 from discord.ext import commands
 
 class Restart(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="restart", aliases=["reboot"])
     @commands.is_owner()
-    async def restart(self, ctx):
+    async def restart(self, ctx: commands.Context):
         """Restart the bot."""
         try:
             embed = discord.Embed(

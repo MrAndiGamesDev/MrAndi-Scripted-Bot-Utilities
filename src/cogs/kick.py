@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 
 class Kick(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason=None):
+    async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         """Kicks a member from the server."""
         if member == ctx.author:
             await ctx.send("You cannot kick yourself!")
