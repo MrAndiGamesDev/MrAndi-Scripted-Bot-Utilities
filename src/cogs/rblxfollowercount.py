@@ -69,14 +69,16 @@ class RobloxFollowers(commands.Cog):
             embed.set_footer(text="Powered by RoProxy")
             if avatar_url:
                 embed.set_thumbnail(url=avatar_url)
-            await ctx.send(embed=embed)
+            async with ctx.typing():
+                await ctx.send(embed=embed)
         except Exception as e:
             error_embed = discord.Embed(
                 title="Error",
                 description="An error occurred while fetching the follower count.",
                 color=discord.Color.red()
             )
-            await ctx.send(embed=error_embed)
+            async with ctx.typing():
+                await ctx.send(embed=error_embed)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(RobloxFollowers(bot))
