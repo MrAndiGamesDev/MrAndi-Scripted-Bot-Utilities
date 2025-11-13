@@ -2,7 +2,7 @@
 echo Activating virtual environment...
 call MrAndi-Scripted-Utilites-Packages\Scripts\activate
 echo Virtual environment activated.
-timeout /t 1
+timeout /t 2
 echo Installing dependencies...
 pip install -r requirements.txt
 timeout /t 2
