@@ -1,10 +1,10 @@
 import os
 import discord
 from discord.ext import commands
-from discord.ext.commands import Bot
 from discord.gateway import DiscordWebSocket
 from dotenv import load_dotenv
 from pathlib import Path
+from typing import Dict, Optional
 
 try:
     from src.modules.load_config import JsonLoader
@@ -14,98 +14,85 @@ except ImportError:
     from modules.set_identify import GetIdentify
 
 class Bot(commands.Bot):
-    def __init__(self, config: dict) -> None:
-        self._Is_Mobile = True
-        self.jsonloader = JsonLoader()
-        self._config = config or self.jsonloader.load()
+    """Refactored bot class with clearer responsibilities and reduced redundancy."""
+
+    def __init__(self, config: Dict) -> None:
+        self._is_mobile = True
+        self._jsonloader = JsonLoader()
+        self._prefix = config.get("Prefix") or self._jsonloader.load().get("Prefix", "!")
+        self._config = config
 
         intents = discord.Intents.default()
         intents.message_content = True
         intents.typing = True
 
-        super().__init__(command_prefix=config["Prefix"], intents=intents)
+        super().__init__(command_prefix=self._prefix, intents=intents)
 
-        # Remove default help command
         self.remove_command("help")
+        DiscordWebSocket.identify = self._get_identify()
 
-        # Set identify to mobile by default
-        DiscordWebSocket.identify = self.get_identify()
+    # ---------- internal helpers ----------
+    def _get_identify(self):
+        return (
+            GetIdentify.set_identify_to_mobile
+            if self._is_mobile
+            else GetIdentify.set_identify_to_pc
+        )
 
-    def get_identify(self) -> GetIdentify:
-        return GetIdentify.set_identify_to_mobile if self._Is_Mobile else GetIdentify.set_identify_to_pc
-
-    async def setup_hook(self) -> None:
-        # Ensure the client is ready before calling bot events/commands
-        await self.load_all_cogs()
-        await self.load_all_events()
-        # Ensure the client is ready before calling change_presence
-        if self.is_ready():
-            self.change_presence_status()
-        else:
-            # Defer change_presence to on_ready if not ready yet
-            self.loop.create_task(self._deferred_change_presence())
-
-    async def _deferred_change_presence(self) -> None:
+    async def _change_presence_once_ready(self) -> None:
         await self.wait_until_ready()
-        await self.change_presence_status()
-
-    async def change_presence_status(self) -> None:
         activity = discord.Activity(
             type=discord.ActivityType.watching,
-            name=f"{self._config['Prefix']}help (If need any help with the bot)"
+            name=f"{self._prefix}help (If need any help with the bot)",
         )
         await self.change_presence(activity=activity, status=discord.Status.online)
 
-    async def load_all_cogs(self) -> None:
-        cog_dir = Path(__file__).parent / "src" / "cogs"
-        if not cog_dir.exists():
-            print(f"Cog directory {cog_dir} not found.")
-            return
-        loaded, failed = [], []
-        for file in cog_dir.glob("*.py"):
-            try:
-                await self.load_extension(f"src.cogs.{file.stem}")
-                loaded.append(file.stem)
-            except Exception as exc:
-                failed.append((file.stem, exc))
-        for name in loaded:
-            print(f"Loaded cog: {name}")
-        for name, exc in failed:
-            print(f"Failed to load cog {name}: {exc}")
+    # ---------- public async api ----------
+    async def setup_hook(self) -> None:
+        base = Path(__file__).parent
+        src = base / "src"
+        await self._load_extensions(src, src / "cogs")
+        await self._load_extensions(src, src / "events")
 
-    async def load_all_events(self) -> None:
-        event_dir = Path(__file__).parent / "src" / "events"
-        if not event_dir.exists():
-            print(f"Event directory {event_dir} not found.")
+        # Schedule presence change without blocking startup
+        self.loop.create_task(self._change_presence_once_ready())
+
+    async def _load_extensions(self, base: Path, path: Path) -> None:
+        if not path.exists():
+            print(f"Directory {path} not found – skipped.")
             return
+
         loaded, failed = [], []
-        for file in event_dir.glob("*.py"):
+        for file in path.glob("*.py"):
             try:
-                await self.load_extension(f"src.events.{file.stem}")
+                await self.load_extension(f"{base.name}.{path.name}.{file.stem}")
                 loaded.append(file.stem)
             except Exception as exc:
                 failed.append((file.stem, exc))
+
         for name in loaded:
-            print(f"Loaded event: {name}")
+            print(f"Loaded extension: {name}")
         for name, exc in failed:
-            print(f"Failed to load event {name}: {exc}")
+            print(f"Failed to load extension {name}: {exc}")
 
 class Launcher:
+    """Handles environment setup and bot startup."""
+
     def __init__(self) -> None:
         load_dotenv()
-        self.jsonloader = JsonLoader()
-        self.config = self.jsonloader.load()
-        self.token = os.getenv("TOKEN")
+        self._jsonloader = JsonLoader()
+        self._config = self._jsonloader.load()
+        self._token = os.getenv("TOKEN")
 
-    def get_token(self) -> str:
-        if not self.token:
+    def _validate_token(self) -> str:
+        if not self._token:
             raise ValueError("No TOKEN found in environment variables")
-        return self.token
+        return self._token
 
     def run(self) -> None:
-        bot = Bot(self.config)
+        bot = Bot(self._config)
         try:
-            bot.run(self.get_token())
+            bot.run(self._validate_token())
         except discord.LoginFailure:
             print("Failed to login: Invalid token")
         except Exception as e:
