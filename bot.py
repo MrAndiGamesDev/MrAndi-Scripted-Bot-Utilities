@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.gateway import DiscordWebSocket
 from dotenv import load_dotenv
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 
 try:
     from src.modules.load_config import JsonLoader
