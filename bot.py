@@ -19,7 +19,7 @@ class Bot(commands.Bot):
     def __init__(self, config: Dict) -> None:
         self._is_mobile = True
         self._jsonloader = JsonLoader()
-        self._prefix = config.get("Prefix") or self._jsonloader.load().get("Prefix", "!")
+        self._prefix = config.get("Prefix") or self._jsonloader.load().get("Prefix")
         self._config = config
 
         intents = discord.Intents.default()
