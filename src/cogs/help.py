@@ -26,6 +26,7 @@ class HelpCog(commands.Cog):
         "note": "Adds a personal note.",
         "notes": "Displays your personal notes.",
         "clearnotes": "Clears all your personal notes.",
+        "whomademe": "Displays information about who made the bot.",
         "ping": "Replies with the bot client ping.",
         "purge": "Purges a specified number of messages from the channel.",
         "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
