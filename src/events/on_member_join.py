@@ -5,11 +5,20 @@ class OnMemberJoined(commands.Cog):
     def __init__(self, bot: commands.Bot, *, channel_id: int) -> None:
         self.bot = bot
         self.channel_id = channel_id
+    
+    async def _resolve_channel(self):
+        ch = self.bot.get_channel(self.channel_id)
+        if ch:
+            return ch
+        try:
+            return await self.bot.fetch_channel(self.channel_id)
+        except Exception:
+            return None
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         try:
-            channel = self.bot.get_channel(self.channel_id)
+            channel = await self._resolve_channel()
             if not channel:
                 print("Welcome channel %s not found; skipping message." % self.channel_id)
                 return
@@ -24,7 +33,7 @@ class OnMemberJoined(commands.Cog):
                 .set_thumbnail(url=member.display_avatar.url)
             )
             await channel.send(embed=embed)
-        except discord.Forbidden:
+        except (discord.Forbidden, discord.HTTPException):
             pass
         
 async def setup(bot: commands.Bot):
