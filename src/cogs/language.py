@@ -9,7 +9,7 @@ class Language(commands.Cog):
     async def whomademe(self, ctx: commands.Context):
         embed = discord.Embed(
             title="Who Made Me?",
-            description="I was made by <@808718935553736714> using a programming language called Python.",
+            description="I was made by <@808718935553736714> using a programming language called Python..",
             color=discord.Color.purple(),
         )
         embed.set_thumbnail(url="https://cdn.iconscout.com/icon/free/png-512/free-python-logo-icon-svg-download-png-2945099.png")

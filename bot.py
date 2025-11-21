@@ -39,23 +39,12 @@ class Bot(commands.Bot):
             else GetIdentify.set_identify_to_pc
         )
 
-    async def _change_presence_once_ready(self) -> None:
-        await self.wait_until_ready()
-        activity = discord.Activity(
-            type=discord.ActivityType.watching,
-            name=f"{self._prefix}help (If need any help with the bot)",
-        )
-        await self.change_presence(activity=activity, status=discord.Status.online)
-
     # ---------- public async api ----------
     async def setup_hook(self) -> None:
         base = Path(__file__).parent
         src = base / "src"
         await self._load_extensions(src, src / "cogs")
         await self._load_extensions(src, src / "events")
-
-        # Schedule presence change without blocking startup
-        self.loop.create_task(self._change_presence_once_ready())
 
     async def _load_extensions(self, base: Path, path: Path) -> None:
         if not path.exists():

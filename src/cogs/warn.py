@@ -14,12 +14,18 @@ class WarnSystem(commands.Cog):
         if member == ctx.author:
             await ctx.send("You cannot warn yourself!")
             return
+            
         if member == ctx.guild.owner:
             await ctx.send("You cannot warn the server owner!")
             return
 
         self.warnings[member.id].append(reason)
-        await ctx.send(f"{member.mention} has been warned for: {reason}")
+        embed = discord.Embed(
+            title="Member Warned",
+            description=f"{member.mention} has been warned for: {reason}",
+            color=discord.Color.red()
+        )
+        await ctx.send(embed=embed)
 
         # Optionally, DM the user about the warning
         try:

@@ -39,6 +39,7 @@ class HelpCog(commands.Cog):
         "shutdown": "Shuts down the bot.",
         "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
         "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
+        "tictactoe": "Play a game of tic-tac-toe with another player.",
         "unban": "Unbans a member from the server.",
         "clearwarnings": "Clears/warns/displays warnings for a member.",
         "help": "Shows this message",
@@ -46,7 +47,7 @@ class HelpCog(commands.Cog):
 
     CATEGORIES: Dict[str, List[str]] = {
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
-        "fun": ["joke", "rps", "roll", "meme"],
+        "fun": ["joke", "rps", "roll", "meme", "tictactoe"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount"],
         "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "tempRole", "modmail", "getbadge"],
     }
