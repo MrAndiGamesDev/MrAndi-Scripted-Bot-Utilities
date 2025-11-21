@@ -8,20 +8,24 @@ class OnMemberRemoved(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        channel = self.bot.get_channel(self.channel_id)
-        if not channel:
-            return
+        try:
+            channel = self.bot.get_channel(self.channel_id)
+            if not channel:
+                print("Goodbye channel %s not found; skipping message." % self.channel_id)
+                return
 
-        embed = (
-            discord.Embed(
-                title=f"Goodbye {member.display_name}!",
-                description=f"Thanks for staying {member.guild.name}!",
-                color=discord.Color.red(),
-                timestamp=discord.utils.utcnow(),
+            embed = (
+                discord.Embed(
+                    title=f"Goodbye {member.display_name}!",
+                    description=f"Thanks for staying in {member.guild.name}!",
+                    color=discord.Color.red(),
+                    timestamp=discord.utils.utcnow(),
+                )
+                .set_thumbnail(url=member.display_avatar.url)
             )
-            .set_thumbnail(url=member.display_avatar.url)
-        )
-        await channel.send(embed=embed)
-
+            await channel.send(embed=embed)
+        except discord.Forbidden:
+            pass
+        
 async def setup(bot: commands.Bot):
     await bot.add_cog(OnMemberRemoved(bot, channel_id=bot._config["WelcomeAndGoodByeChannel"]))
