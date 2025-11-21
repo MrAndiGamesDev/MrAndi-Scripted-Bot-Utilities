@@ -33,7 +33,7 @@ class Unban(commands.Cog):
             await ctx.guild.unban(banned_member)
             # Create and send embed
             embed = discord.Embed(
-                title="Member Unbanned",
+                title="✅ Member Unbanned",
                 description=f"{banned_member.mention} has been unbanned by {ctx.author.mention}",
                 color=discord.Color.green()
             )

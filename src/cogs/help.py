@@ -7,6 +7,57 @@ try:
 except ImportError:
     raise
 
+class HelpPaginator(discord.ui.View):
+    """Persistent view for paginating help embeds via text buttons."""
+    def __init__(self, chunks: List[List[tuple]], prefix: str, author_id: int):
+        super().__init__(timeout=60)
+        self.chunks = chunks
+        self.prefix = prefix
+        self.author_id = author_id
+        self.current_page = 0
+        self.total_pages = len(chunks)
+        self._update_buttons()
+
+    def _update_buttons(self):
+        self.prev_button.disabled = self.current_page == 0
+        self.next_button.disabled = self.current_page == self.total_pages - 1
+
+    def _build_embed(self):
+        chunk = self.chunks[self.current_page]
+        embed = discord.Embed(
+            title="Bot Commands",
+            description="Here are the available commands:",
+            color=discord.Color.purple()
+        )
+        for cmd, desc in chunk:
+            embed.add_field(name=f"{self.prefix}{cmd}", value=desc, inline=False)
+        footer_lines = [
+            f"Page {self.current_page + 1}/{self.total_pages} | Type {self.prefix}help <command> for details on a specific command.",
+            f"Use {self.prefix}help <moderation, fun, utility, admin> to explore command categories."
+        ]
+        embed.set_footer(text="\n".join(footer_lines))
+        return embed
+
+    @discord.ui.button(label="⬅️", style=discord.ButtonStyle.secondary)
+    async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if self.current_page > 0:
+            self.current_page -= 1
+            self._update_buttons()
+            await interaction.response.edit_message(embed=self._build_embed(), view=self)
+
+    @discord.ui.button(label="➡️", style=discord.ButtonStyle.secondary)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if self.current_page < self.total_pages - 1:
+            self.current_page += 1
+            self._update_buttons()
+            await interaction.response.edit_message(embed=self._build_embed(), view=self)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            await interaction.response.send_message("You can't control this menu.", ephemeral=True)
+            return False
+        return True
+
 class HelpCog(commands.Cog):
     """Cog that handles the dynamic help command."""
 
@@ -16,7 +67,9 @@ class HelpCog(commands.Cog):
         "dm": "Make the bot say something in dms.",
         "joke": "Fetches a random meme.",
         "getbadge": "Provides information about getting the Active Developer Badge",
-        "giveaway": "Start a giveaway. Time is in minutes.",
+        "giveaway": "Start a giveaway. Duration format: 1d, 2h, 30m (days/hours/minutes).",
+        "giveawayreroll": "Reroll the winners of a giveaway.",
+        "giveawayend": "End a giveaway.",
         "invite": "Generates and sends an invite link to the server.",
         "kick": "Kicks a member from the server.",
         "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
@@ -49,7 +102,7 @@ class HelpCog(commands.Cog):
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll", "meme", "tictactoe"],
         "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount"],
-        "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "tempRole", "modmail", "getbadge"],
+        "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "giveawayreroll", "giveawayend", "tempRole", "modmail", "getbadge"],
     }
 
     def __init__(self, bot: commands.Bot):
@@ -94,7 +147,6 @@ class HelpCog(commands.Cog):
 
     def _build_not_found_embed(self, prefix: str, query: str) -> discord.Embed:
         """Build an embed for an unknown query."""
-        # Strip the prefix from the query if it starts with it
         if query.startswith(prefix):
             query = query[len(prefix):]
         return (
@@ -105,23 +157,6 @@ class HelpCog(commands.Cog):
             )
             .set_footer(text=f"Type {prefix}help to see all commands.")
         )
-
-    def _build_main_help_embed(self, prefix: str, chunk: List[tuple], page: int, total_pages: int) -> discord.Embed:
-        """Build the main help embed for a chunk of commands."""
-        embed = discord.Embed(
-            title="Bot Commands",
-            description="Here are the available commands:",
-            color=discord.Color.purple()
-        )
-        for cmd, desc in chunk:
-            embed.add_field(name=f"{prefix}{cmd}", value=desc, inline=False)
-        footer_lines = [
-            f"Page {page}/{total_pages} | Type {prefix}help <command> for details on a specific command.",
-            f"Use {prefix}help <moderation, fun, utility, admin> to explore command categories."
-        ]
-        footer_text = "\n".join(line for line in footer_lines)
-        embed.set_footer(text=footer_text)
-        return embed
 
     @commands.command(name="help", aliases=["commands"])
     async def help_command(self, ctx: commands.Context, *, query: Optional[str] = None):
@@ -139,38 +174,16 @@ class HelpCog(commands.Cog):
             await ctx.reply(embed=embed, mention_author=False)
             return
 
-        # Split commands into chunks and send the first one with pagination
         items = list(self.COMMANDS_INFO.items())
         chunks = self._chunk_items(items)
         total_pages = len(chunks)
-        first_embed = self._build_main_help_embed(prefix, chunks[0], 1, total_pages)
+        first_embed = HelpPaginator(chunks, prefix, ctx.author.id)._build_embed()
         if total_pages == 1:
             await ctx.reply(embed=first_embed, mention_author=False)
             return
 
-        message = await ctx.reply(embed=first_embed, mention_author=False)
-        await message.add_reaction("⬅️")
-        await message.add_reaction("➡️")
-
-        def check(reaction, user):
-            return user == ctx.author and reaction.message.id == message.id and str(reaction.emoji) in ["⬅️", "➡️"]
-
-        current_page = 0
-        while True:
-            try:
-                reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=check)
-            except:
-                break
-            if str(reaction.emoji) == "➡️":
-                if current_page < total_pages - 1:
-                    current_page += 1
-                    await message.edit(embed=self._build_main_help_embed(prefix, chunks[current_page], current_page + 1, total_pages))
-                await message.remove_reaction("➡️", user)
-            elif str(reaction.emoji) == "⬅️":
-                if current_page > 0:
-                    current_page -= 1
-                    await message.edit(embed=self._build_main_help_embed(prefix, chunks[current_page], current_page + 1, total_pages))
-                await message.remove_reaction("⬅️", user)
+        view = HelpPaginator(chunks, prefix, ctx.author.id)
+        await ctx.reply(embed=first_embed, view=view, mention_author=False)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(HelpCog(bot))

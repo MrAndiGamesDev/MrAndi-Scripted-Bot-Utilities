@@ -8,7 +8,7 @@ class Language(commands.Cog):
     @commands.command(name="whomademe")
     async def whomademe(self, ctx: commands.Context):
         embed = discord.Embed(
-            title="Who Made Me?",
+            title="🔍 Who Made Me?",
             description="I was made by <@808718935553736714> using a programming language called Python..",
             color=discord.Color.purple(),
         )

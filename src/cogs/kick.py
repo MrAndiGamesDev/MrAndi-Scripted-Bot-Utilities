@@ -5,7 +5,7 @@ class Kick(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="kick", aliases=["yet"])
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         """Kicks a member from the server."""
@@ -18,7 +18,7 @@ class Kick(commands.Cog):
         try:
             await member.kick(reason=reason)
             embed = discord.Embed(
-                title="Member Kicked",
+                title="✅ Member Kicked",
                 description=f"{member.mention} has been kicked by {ctx.author.mention}",
                 color=discord.Color.orange()
             )

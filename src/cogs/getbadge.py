@@ -13,6 +13,6 @@ class Getbadge(commands.Cog):
         ]
         for msg in messages:
             await ctx.send(msg)
-
+        
 async def setup(bot: commands.Bot):
     await bot.add_cog(Getbadge(bot))

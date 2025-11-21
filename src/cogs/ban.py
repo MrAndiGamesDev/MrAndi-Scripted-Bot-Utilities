@@ -18,7 +18,7 @@ class Ban(commands.Cog):
         try:
             await member.ban(reason=reason)
             embed = discord.Embed(
-                title="Member Banned",
+                title="🔨 Member Banned",
                 description=f"{member.mention} has been banned by {ctx.author.mention}",
                 color=discord.Color.red()
             )

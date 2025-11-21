@@ -33,7 +33,7 @@ class WarnSystem(commands.Cog):
         except discord.Forbidden:
             await ctx.send(f"Could not DM {member.mention} about their warning.")
 
-    @commands.command(name="warnings")
+    @commands.command(name="warnings", aliases=["warns"])
     @commands.has_permissions(manage_messages=True)
     async def warnings(self, ctx: commands.Context, member: discord.Member):
         """Displays all warnings for a member."""

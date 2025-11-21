@@ -11,7 +11,7 @@ class Shutdown(commands.Cog):
     @commands.is_owner()
     async def shutdown(self, ctx: commands.Context) -> None:
         embed = discord.Embed(
-            title="Shutting Down",
+            title="🚫 Shutting Down",
             description="The bot is going offline...",
             color=discord.Color.purple()
         )

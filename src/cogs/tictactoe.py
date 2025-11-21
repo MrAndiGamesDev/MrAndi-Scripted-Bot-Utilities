@@ -61,7 +61,7 @@ class TicTacToe(commands.Cog):
         game["turn"] = 1 - game["turn"]
 
         embed = discord.Embed(
-            title="Tic-Tac-Toe",
+            title="🎮 Tic-Tac-Toe",
             description=f"{game['players'][0].mention} vs {game['players'][1].mention}\n\n{self.format_board(game['board'])}",
             color=discord.Color.blue()
         )

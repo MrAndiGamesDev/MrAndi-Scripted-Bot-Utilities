@@ -6,7 +6,7 @@ class TempRole(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="temprole", aliases=["temp"])
     @commands.has_permissions(manage_roles=True)
     async def temprole(self, ctx: commands.Context, member: discord.Member, role: discord.Role, duration: int):
         """Assigns a temporary role to a user for a specified duration (in seconds)."""
