@@ -69,6 +69,7 @@ class Launcher:
 
     def __init__(self) -> None:
         load_dotenv()
+        
         self._jsonloader = JsonLoader()
         self._config = self._jsonloader.load()
         self._token = os.getenv("TOKEN")

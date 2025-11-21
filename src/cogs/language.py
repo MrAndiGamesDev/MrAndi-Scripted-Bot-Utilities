@@ -5,7 +5,7 @@ class Language(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="whomademe")
+    @commands.command(name="whomademe", aliases=["who"])
     async def whomademe(self, ctx: commands.Context):
         embed = discord.Embed(
             title="🔍 Who Made Me?",

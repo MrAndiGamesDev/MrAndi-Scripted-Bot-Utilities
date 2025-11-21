@@ -7,7 +7,7 @@ class Unban(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx: commands.Context, *, member):
+    async def unban(self, ctx: commands.Context, *, member: discord.Member):
         """Unbans a member from the server."""
         try:
             # Get the list of banned users

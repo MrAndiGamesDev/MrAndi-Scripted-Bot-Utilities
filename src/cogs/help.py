@@ -1,3 +1,4 @@
+import random
 import discord
 from discord.ext import commands
 from typing import Dict, List, Optional
@@ -10,7 +11,7 @@ except ImportError:
 class HelpPaginator(discord.ui.View):
     """Persistent view for paginating help embeds via text buttons."""
     def __init__(self, chunks: List[List[tuple]], prefix: str, author_id: int):
-        super().__init__(timeout=60)
+        super().__init__(timeout=random.randint(60, 90))
         self.chunks = chunks
         self.prefix = prefix
         self.author_id = author_id
@@ -93,6 +94,7 @@ class HelpCog(commands.Cog):
         "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
         "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
         "tictactoe": "Play a game of tic-tac-toe with another player.",
+        "transactionroblox": "Checks your roblox transactions/robux balances.",
         "unban": "Unbans a member from the server.",
         "clearwarnings": "Clears/warns/displays warnings for a member.",
         "help": "Shows this message",

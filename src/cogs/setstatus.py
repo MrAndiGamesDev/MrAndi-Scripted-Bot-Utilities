@@ -54,7 +54,7 @@ class SetStatus(commands.Cog):
                 )
             )
             embed = discord.Embed(
-                title="Status Updated",
+                title="✅ Status Updated",
                 description=f"Bot status changed to: {status_type.title()} {status_text}",
                 color=discord.Color.green()
             )

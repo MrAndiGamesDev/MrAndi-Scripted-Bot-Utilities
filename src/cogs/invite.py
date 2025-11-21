@@ -33,7 +33,7 @@ class Invite(commands.Cog):
             )
             embed = discord.Embed(
                 title="Server Invite",
-                description=f"[Click here to join the server]({invite.url})",
+                description=f"[Click here to join the server!]({invite.url})",
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
