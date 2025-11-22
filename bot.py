@@ -22,12 +22,12 @@ class Bot(commands.Bot):
         self._prefix = config.get("Prefix") or self._jsonloader.load().get("Prefix")
         self._config = config
 
-        intents = discord.Intents.default()
-        intents.message_content = True
-        intents.typing = True
-        intents.members = True
+        self._intents = discord.Intents.default()
+        self._intents.message_content = True
+        self._intents.typing = True
+        self._intents.members = True
 
-        super().__init__(command_prefix=self._prefix, intents=intents)
+        super().__init__(command_prefix=self._prefix, intents=self._intents)
 
         self.remove_command("help")
         DiscordWebSocket.identify = self._get_identify()

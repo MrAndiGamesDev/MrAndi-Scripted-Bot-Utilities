@@ -7,7 +7,7 @@ class Uptime(commands.Cog):
         self.bot = bot
         self.start_time = datetime.datetime.now(datetime.timezone.utc)
 
-    @commands.command(name="uptime")
+    @commands.command(name="uptime", aliases=["up"])
     async def uptime(self, ctx: commands.Context):
         now = datetime.datetime.now(datetime.timezone.utc)
         delta = now - self.start_time
@@ -16,8 +16,8 @@ class Uptime(commands.Cog):
         days, hours = divmod(hours, 24)
         uptime_str = f"{days}d {hours}h {minutes}m {seconds}s"
         embed = discord.Embed(
-            title="Bot Uptime",
-            description=f"I have been online for **{uptime_str}**",
+            title="⏰ Bot Uptime",
+            description=f"i've have been online for **{uptime_str}**",
             color=discord.Color.green()
         )
         await ctx.send(embed=embed)

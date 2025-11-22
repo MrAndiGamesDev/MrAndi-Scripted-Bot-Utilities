@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from easy_pil import Canvas, Editor, Font, load_image_async
 
 class OnMemberJoined(commands.Cog):
     def __init__(self, bot: commands.Bot, *, channel_id: int) -> None:
@@ -23,16 +24,38 @@ class OnMemberJoined(commands.Cog):
                 print("Welcome channel %s not found; skipping message." % self.channel_id)
                 return
 
-            embed = (
-                discord.Embed(
-                    title=f"Welcome {member.display_name}!",
-                    description=f"Welcome to {member.guild.name}!",
-                    color=discord.Color.purple(),
-                    timestamp=discord.utils.utcnow(),
-                )
-                .set_thumbnail(url=member.display_avatar.url)
+            # Create image with easy_pil
+            background = Editor(Canvas((1000, 300), color="#6b00bc"))
+            avatar = await load_image_async(str(member.display_avatar.url))
+            avatar = Editor(avatar).resize((150, 150)).circle_image()
+
+            # Fonts
+            font_big = Font.poppins(size=35, variant="bold")
+            font_small = Font.poppins(size=40, variant="regular")
+            text_color = "white"
+
+            # Paste avatar
+            background.paste(avatar.image, (50, 50))
+
+            # Write text
+            background.text(
+                (280, 50),
+                f"Welcome {member.display_name}!",
+                font=font_big,
+                color=text_color
             )
-            await channel.send(embed=embed)
+            
+            background.text(
+                (280, 200),
+                f"Welcome to {member.guild.name}!",
+                font=font_small,
+                color=text_color
+            )
+
+            assets = "src/assets"
+            file = discord.File(fp=background.image_bytes, filename=f"{assets}/pic.png")
+
+            await channel.send(file=file)
         except (discord.Forbidden, discord.HTTPException):
             pass
         

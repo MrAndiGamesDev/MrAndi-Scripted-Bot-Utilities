@@ -5,7 +5,7 @@ class SetStatus(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="setstatus", aliases=["setstat"])
+    @commands.command(name="setstatus", aliases=["setbio"])
     @commands.is_owner()
     async def setstatus(self, ctx: commands.Context, status_type: str, status_state: str = None, *, status_text: str = None):
         # Map status types to ActivityType
@@ -15,6 +15,7 @@ class SetStatus(commands.Cog):
             'listening': discord.ActivityType.listening,
             'streaming': discord.ActivityType.streaming
         }
+
         # Map status states
         status_states = {
             'online': discord.Status.online,
@@ -31,7 +32,7 @@ class SetStatus(commands.Cog):
             try:
                 await self.bot.change_presence(status=status_states[status_state.lower()])
                 embed = discord.Embed(
-                    title="Status Updated",
+                    title="✅ Status Updated",
                     description=f"Bot status state changed to: {status_state.title()}",
                     color=discord.Color.green()
                 )
