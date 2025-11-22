@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import Dict, Any
 from src.modules.load_config import JsonLoader
 
-LEVEL_UP_XP = 30
-XP_AMT = random.randint(3, 7)
+REBIRTH_MULTIPLIER = 2
+REBIRTH_AMT = 25
+XP_AMT = random.randint(3, 8)
 DATA_FILE = Path("src/database/levels.json")
 
 def _load_levels() -> Dict[str, Any]:
@@ -30,7 +31,7 @@ def get_user_level(user_id: int) -> Dict[str, int]:
     levels = _load_levels()
     key = str(user_id)
     if key not in levels:
-        levels[key] = {"level": 0, "xp": 0}
+        levels[key] = {"level": 0, "xp": 0, "rebirth": REBIRTH_AMT}
         _save_levels(levels)
     return levels[key]
 
@@ -51,11 +52,13 @@ class Level(commands.Cog):
             return
 
         user_data = get_user_level(message.author.id)
+        user_data["rebirth"] = user_data["rebirth"]
         user_data["xp"] = user_data["xp"] + XP_AMT
 
         # Handle multiple level-ups in a single message
-        while user_data["xp"] >= LEVEL_UP_XP:
-            user_data["level"] += 1
+        while user_data["xp"] >= user_data["rebirth"]:
+            user_data["level"] = user_data["level"] + 1
+            user_data["rebirth"] = user_data["rebirth"] * REBIRTH_MULTIPLIER
             user_data["xp"] = 0
             embed = discord.Embed(
                 title="🎉 Level Up!",
