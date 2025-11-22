@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from pathlib import Path
 from typing import Dict, Any
+from src.modules.load_config import JsonLoader
 
 LEVEL_UP_XP = 30
 XP_AMT = random.randint(3, 7)
@@ -41,6 +42,7 @@ def save_user_level(user_id: int, data: Dict[str, int]) -> None:
 
 class Level(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
+        self.config = JsonLoader("config.json").load()
         self.bot = bot
 
     @commands.Cog.listener()
@@ -60,7 +62,10 @@ class Level(commands.Cog):
                 description=f"{message.author.mention} has leveled up to level {user_data['level']}!",
                 color=discord.Color.purple()
             )
-            await message.channel.send(embed=embed)
+            # Send the level-up embed to the designated channel
+            channel = self.bot.get_channel(self.config["LevelChannelID"])
+            if channel:
+                await channel.send(embed=embed)
         save_user_level(message.author.id, user_data)
 
 async def setup(bot: commands.Bot) -> None:
