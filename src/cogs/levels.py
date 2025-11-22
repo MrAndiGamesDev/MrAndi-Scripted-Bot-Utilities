@@ -1,31 +1,35 @@
-import math
 import discord
 from discord.ext import commands
-from pathlib import Path
-from src.events.on_level_event import Level_data
+from src.modules.load_config import JsonLoader
+from src.events.on_level_event import LevelData
 
-DATA_FILE = Path("src/database/levels.json")
-
-class Level:
+class Level(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        self.config = JsonLoader("config.json").load()
 
-    @commands.command(name="levels", aliases=["lvls"])
-    async def levels(self, ctx: commands.Context) -> None:
-        user_data = Level_data.get_user_level(ctx.author.id)
+    @commands.command(name="level", aliases=["rank"])
+    async def rank(self, ctx: commands.Context, member: discord.Member = None) -> None:
+        """Check your or another member's level and XP."""
+        target = member or ctx.author
+        user = LevelData.get(target.id)
+        user.setdefault("total_xp", 0)
+        user.setdefault("xp", 0)
+        user.setdefault("level", 0)
+
+        needed = LevelData.xp_for(user["level"])
+        bar = LevelData.progress_bar(user["xp"], needed)
+
         embed = discord.Embed(
-            title=f"{ctx.author.display_name}'s Level Stats",
+            title=f"{target.display_name}'s Level",
             description=(
-                f"**Level:** {user_data['level']}\n"
-                f"**XP:** {user_data['xp']}\n"
-                f"**Progress:** {user_data['progress']}/{math.ceil(user_data['level'] * 100)}"
+                f"**Level {user['level']}**\n"
+                f"`{bar}` {user['xp']} / {needed} XP\n"
+                f"Total XP: {user['total_xp']}"
             ),
-            color=discord.Color.blue()
+            color=discord.Color.purple()
         )
-        level_message = [":purple_large_square:"]
-        for _ in range(user_data['xp']):
-            level_message.append(":black_large_square:")
-        embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        embed.set_thumbnail(url=target.display_avatar.url)
         await ctx.send(embed=embed)
 
 async def setup(bot: commands.Bot) -> None:
