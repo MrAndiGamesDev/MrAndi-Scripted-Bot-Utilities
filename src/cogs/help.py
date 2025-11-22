@@ -96,6 +96,7 @@ class HelpCog(commands.Cog):
         "tictactoe": "Play a game of tic-tac-toe with another player.",
         "transactionroblox": "Checks your roblox transactions/robux balances.",
         "unban": "Unbans a member from the server.",
+        "uptime": "Shows how long the bot has been online.",
         "clearwarnings": "Clears/warns/displays warnings for a member.",
         "help": "Shows this message",
     }
@@ -103,7 +104,7 @@ class HelpCog(commands.Cog):
     CATEGORIES: Dict[str, List[str]] = {
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll", "meme", "tictactoe"],
-        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount"],
+        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount", "uptime"],
         "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "giveawayreroll", "giveawayend", "tempRole", "modmail", "getbadge"],
     }
 
