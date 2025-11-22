@@ -73,6 +73,7 @@ class HelpCog(commands.Cog):
         "giveawayend": "End a giveaway.",
         "invite": "Generates and sends an invite link to the server.",
         "kick": "Kicks a member from the server.",
+        "levels": "Displays the level stats of a user.",
         "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
         "membercount": "Displays the number of members in the server.",
         "meme": "Fetches a random meme.",
@@ -105,7 +106,7 @@ class HelpCog(commands.Cog):
     CATEGORIES: Dict[str, List[str]] = {
         "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
         "fun": ["joke", "rps", "roll", "meme", "tictactoe"],
-        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "rblxfollowercount", "uptime", "serverinfo"],
+        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "levels", "rblxfollowercount", "uptime", "serverinfo"],
         "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "giveawayreroll", "giveawayend", "tempRole", "modmail", "getbadge"],
     }
 
