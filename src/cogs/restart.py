@@ -18,9 +18,16 @@ class Restart(commands.Cog):
                 color=discord.Color.purple()
             )
             await ctx.send(embed=embed)
-            # Schedule the actual restart after the message is sent
+            # On hosting services (Heroku, Railway, etc.) the dyno/container will auto-restart
+            # after the process exits, so we simply close the bot gracefully.
             await self.bot.close()
-            os.execv(sys.executable, ['python'] + sys.argv)
+            # On Windows 10 (and local runs) re-launch the same interpreter with the same args
+            if sys.platform == "win32":
+                # Ensure the script path is quoted to handle spaces
+                os.execv(sys.executable, [sys.executable] + [f'"{arg}"' for arg in sys.argv])
+            # On Unix-like systems (Linux, macOS) use os.execv as well
+            else:
+                os.execv(sys.executable, [sys.executable] + sys.argv)
         except Exception as e:
             await ctx.send(f"Failed to restart: {e}")
 
