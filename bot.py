@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.gateway import DiscordWebSocket
 from dotenv import load_dotenv
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Any, List, Callable, Tuple, Optional
 
 try:
     from src.modules.load_config import JsonLoader
@@ -16,24 +16,25 @@ except ImportError:
 class Bot(commands.Bot):
     """Refactored bot class with clearer responsibilities and reduced redundancy."""
 
-    def __init__(self, config: Dict) -> None:
-        self._is_mobile = True
-        self._jsonloader = JsonLoader()
-        self._prefix = config.get("Prefix") or self._jsonloader.load().get("Prefix")
-        self._config = config
+    def __init__(self, config: Dict) -> Any:
+        self._is_mobile: bool = True
+        self._jsonloader: JsonLoader = JsonLoader()
+        self._prefix: str = config.get("Prefix") or self._jsonloader.load().get("Prefix")
+        self._config: Dict[str, Any] = config
 
-        self._intents = discord.Intents.default()
-        self._intents.message_content = True
-        self._intents.typing = True
-        self._intents.members = True
+        self._intents: discord.Intents = discord.Intents.default()
+        self._intents.message_content: bool = True
+        self._intents.typing: bool = True
+        self._intents.presences: bool = True
+        self._intents.members: bool = True
 
         super().__init__(command_prefix=self._prefix, intents=self._intents)
 
         self.remove_command("help")
-        DiscordWebSocket.identify = self._get_identify()
+        DiscordWebSocket.identify: Callable[[], Dict[str, Any]] = self._get_identify()
 
     # ---------- internal helpers ----------
-    def _get_identify(self):
+    def _get_identify(self) -> bool:
         return (
             GetIdentify.set_identify_to_mobile
             if self._is_mobile
@@ -41,18 +42,26 @@ class Bot(commands.Bot):
         )
 
     # ---------- public async api ----------
-    async def setup_hook(self) -> None:
-        base = Path(__file__).parent
-        src = base / "src"
+    async def setup_hook(self) -> Any:
+        base: Path = Path(__file__).parent
+        src: Path = base / "src"
         await self._load_extensions(src, src / "cogs")
         await self._load_extensions(src, src / "events")
 
-    async def _load_extensions(self, base: Path, path: Path) -> None:
+        try:
+            synced = await self.tree.sync()
+            print(f"Synced {len(synced)} slash command(s)")
+        except Exception as e:
+            print(f"Failed to sync slash commands: {e}")
+
+    async def _load_extensions(self, base: Path, path: Path) -> Optional[str]:
         if not path.exists():
             print(f"Directory {path} not found – skipped.")
-            return
+            return None
 
-        loaded, failed = [], []
+        loaded: List[str] = []
+        failed: List[Tuple[str, Exception]] = []
+
         for file in path.glob("*.py"):
             try:
                 await self.load_extension(f"{base.name}.{path.name}.{file.stem}")
@@ -62,26 +71,27 @@ class Bot(commands.Bot):
 
         for name in loaded:
             print(f"Loaded extension: {name}")
+
         for name, exc in failed:
             print(f"Failed to load extension {name}: {exc}")
 
 class Launcher:
     """Handles environment setup and bot startup."""
 
-    def __init__(self) -> None:
+    def __init__(self) -> Any:
         load_dotenv()
         
-        self._jsonloader = JsonLoader()
-        self._config = self._jsonloader.load()
-        self._token = os.getenv("TOKEN")
+        self._jsonloader: JsonLoader = JsonLoader()
+        self._config: Dict[str, Any] = self._jsonloader.load()
+        self._token: str | None = os.getenv("TOKEN")
 
-    def _validate_token(self) -> str:
+    def _validate_token(self) -> bool:
         if not self._token:
             raise ValueError("No TOKEN found in environment variables")
         return self._token
 
-    def run(self) -> None:
-        bot = Bot(self._config)
+    def run(self) -> Any:
+        bot: Bot = Bot(self._config)
         try:
             bot.run(self._validate_token())
         except discord.LoginFailure:
@@ -90,5 +100,5 @@ class Launcher:
             print(f"Error running bot: {e}")
 
 if __name__ == "__main__":
-    BotLauncher = Launcher()
-    BotLauncher.run()
+    bot_launcher: Launcher = Launcher()
+    bot_launcher.run()

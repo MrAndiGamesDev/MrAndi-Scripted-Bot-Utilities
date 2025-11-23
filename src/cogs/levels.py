@@ -32,5 +32,27 @@ class Level(commands.Cog):
         embed.set_thumbnail(url=target.display_avatar.url)
         await ctx.send(embed=embed)
 
+    @commands.command(name="setlevel", aliases=["setrank"])
+    @commands.has_permissions(administrator=True)
+    async def setlevel(self, ctx: commands.Context, member: discord.Member, new_level: int) -> None:
+        """Set a user's level (admin only)."""
+        if new_level < 0:
+            await ctx.send("❌ Level must be non-negative.")
+            return
+
+        user = LevelData.get(member.id)
+        user["level"] = new_level
+        user["xp"] = 0
+        user["total_xp"] = LevelData.total_xp_for(new_level)
+        
+        LevelData.save(member.id, user)
+
+        embed = discord.Embed(
+            title="✅ Level Updated",
+            description=f"{member.mention} is now **Level {new_level}**.",
+            color=discord.Color.green()
+        )
+        await ctx.send(embed=embed)
+
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Level(bot))

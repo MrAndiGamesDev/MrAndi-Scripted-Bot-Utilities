@@ -2,6 +2,7 @@ import random
 import discord
 from discord.ext import commands
 from typing import Dict, List, Optional
+from discord import app_commands
 
 try:
     from src.modules.load_config import JsonLoader
@@ -10,6 +11,7 @@ except ImportError:
 
 class HelpPaginator(discord.ui.View):
     """Persistent view for paginating help embeds via text buttons."""
+
     def __init__(self, chunks: List[List[tuple]], prefix: str, author_id: int):
         super().__init__(timeout=random.randint(60, 90))
         self.chunks = chunks
@@ -19,52 +21,71 @@ class HelpPaginator(discord.ui.View):
         self.total_pages = len(chunks)
         self._update_buttons()
 
-    def _update_buttons(self):
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+    def _update_buttons(self) -> None:
         self.prev_button.disabled = self.current_page == 0
         self.next_button.disabled = self.current_page == self.total_pages - 1
 
-    def _build_embed(self):
+    def _build_embed(self) -> discord.Embed:
         chunk = self.chunks[self.current_page]
         embed = discord.Embed(
             title="Bot Commands",
             description="Here are the available commands:",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         for cmd, desc in chunk:
             embed.add_field(name=f"{self.prefix}{cmd}", value=desc, inline=False)
+
         footer_lines = [
-            f"Page {self.current_page + 1}/{self.total_pages} | Type {self.prefix}help <command> for details on a specific command.",
-            f"Use {self.prefix}help <moderation, fun, utility, admin> to explore command categories."
+            f"Page {self.current_page + 1}/{self.total_pages} | "
+            f"Type {self.prefix}help <command> for details on a specific command.",
+            f"Use {self.prefix}help <moderation, fun, utility, admin> to explore command categories.",
         ]
         embed.set_footer(text="\n".join(footer_lines))
         return embed
 
+    # ------------------------------------------------------------------
+    # UI callbacks
+    # ------------------------------------------------------------------
     @discord.ui.button(label="⬅️", style=discord.ButtonStyle.secondary)
-    async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page > 0:
             self.current_page -= 1
             self._update_buttons()
             await interaction.response.edit_message(embed=self._build_embed(), view=self)
 
     @discord.ui.button(label="➡️", style=discord.ButtonStyle.secondary)
-    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.current_page < self.total_pages - 1:
-            self.current_page += 1
-            self._update_buttons()
-            await interaction.response.edit_message(embed=self._build_embed(), view=self)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self.current_page >= self.total_pages - 1:
+            return
+        self.current_page += 1
+        self._update_buttons()
+        await interaction.response.edit_message(embed=self._build_embed(), view=self)
+
+    @discord.ui.button(label="🗑️", style=discord.ButtonStyle.danger)
+    async def delete_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await interaction.message.delete()
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
-            await interaction.response.send_message("You can't control this menu.", ephemeral=True)
+            await interaction.response.send_message(
+                "You can't control this menu.", ephemeral=True
+            )
             return False
         return True
 
 class HelpCog(commands.Cog):
     """Cog that handles the dynamic help command."""
 
+    # ------------------------------------------------------------------
+    # Data
+    # ------------------------------------------------------------------
     COMMANDS_INFO: Dict[str, str] = {
         "avatar": "Displays the avatar of a user.",
         "ban": "Bans a member from the server.",
+        "botinfo": "Displays information about the bot.",
         "dm": "Make the bot say something in dms.",
         "joke": "Fetches a random meme.",
         "getbadge": "Provides information about getting the Active Developer Badge",
@@ -91,7 +112,8 @@ class HelpCog(commands.Cog):
         "roll": "Rolls a die with a specified number of sides.",
         "say": "Make the bot say something in the specified channel.",
         "setstatus": "Sets the bot's status message.",
-        "shutdown": "Shuts down the bot.",
+        "setlevel": "Sets a user's level (Admin only).",
+        "shutdown": "Shuts down the bot. (Owner only)",
         "serverinfo": "Displays information about the server.",
         "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
         "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
@@ -104,15 +126,58 @@ class HelpCog(commands.Cog):
     }
 
     CATEGORIES: Dict[str, List[str]] = {
-        "moderation": ["ban", "kick", "unban", "purge", "lockdown", "slowmode", "clearwarnings", "replymodmail"],
-        "fun": ["joke", "rps", "roll", "meme", "tictactoe"],
-        "utility": ["avatar", "membercount", "ping", "invite", "note", "notes", "clearnotes", "level", "rblxfollowercount", "uptime", "serverinfo"],
-        "admin": ["restart", "shutdown", "setstatus", "say", "dm", "giveaway", "giveawayreroll", "giveawayend", "tempRole", "modmail", "getbadge"],
+        "moderation": [
+            "ban",
+            "kick",
+            "unban",
+            "purge",
+            "lockdown",
+            "slowmode",
+            "clearwarnings",
+            "replymodmail",
+        ],
+        "fun": [
+            "joke",
+            "rps",
+            "roll",
+            "meme",
+            "tictactoe",
+        ],
+        "utility": [
+            "avatar",
+            "botinfo",
+            "membercount",
+            "ping",
+            "invite",
+            "note",
+            "notes",
+            "clearnotes",
+            "level",
+            "rblxfollowercount",
+            "uptime",
+            "serverinfo",
+        ],
+        "admin": [
+            "restart",
+            "shutdown",
+            "setstatus",
+            "say",
+            "dm",
+            "giveaway",
+            "giveawayreroll",
+            "giveawayend",
+            "tempRole",
+            "modmail",
+            "getbadge",
+        ],
     }
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
+    # ------------------------------------------------------------------
+    # Utilities
+    # ------------------------------------------------------------------
     @staticmethod
     def _get_prefix() -> str:
         """Load prefix from config once per invocation."""
@@ -121,15 +186,18 @@ class HelpCog(commands.Cog):
     @staticmethod
     def _chunk_items(items: List[tuple], chunk_size: int = 5) -> List[List[tuple]]:
         """Split a list of tuples into smaller chunks."""
-        return [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+        return [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
 
+    # ------------------------------------------------------------------
+    # Embed builders
+    # ------------------------------------------------------------------
     def _build_command_embed(self, prefix: str, command: str) -> discord.Embed:
         """Build an embed for a single command."""
         return (
             discord.Embed(
                 title=f"Command: {prefix}{command}",
                 description=self.COMMANDS_INFO[command],
-                color=discord.Color.purple()
+                color=discord.Color.purple(),
             )
             .set_footer(text=f"Type {prefix}help to see all commands.")
         )
@@ -139,32 +207,69 @@ class HelpCog(commands.Cog):
         embed = discord.Embed(
             title=f"Category: {category.capitalize()}",
             description="Here are the commands in this category:",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         for cmd in self.CATEGORIES[category]:
             embed.add_field(
                 name=f"{prefix}{cmd}",
                 value=self.COMMANDS_INFO.get(cmd, "No description available."),
-                inline=False
+                inline=False,
             )
-        embed.set_footer(text=f"Type {prefix}help <command> for details on a specific command.")
+        embed.set_footer(
+            text=f"Type {prefix}help <command> for details on a specific command."
+        )
         return embed
 
     def _build_not_found_embed(self, prefix: str, query: str) -> discord.Embed:
         """Build an embed for an unknown query."""
         if query.startswith(prefix):
-            query = query[len(prefix):]
+            query = query[len(prefix) :]
         return (
             discord.Embed(
                 title="Not Found",
                 description=f"No command or category named '{query}' found.",
-                color=discord.Color.red()
+                color=discord.Color.red(),
             )
             .set_footer(text=f"Type {prefix}help to see all commands.")
         )
 
+    # ------------------------------------------------------------------
+    # Slash Commands
+    # ------------------------------------------------------------------
+    @app_commands.command(name="help", description="Display help for commands and categories.")
+    @app_commands.describe(query="Optional command or category name to get specific help")
+    async def help_slash(self, interaction: discord.Interaction, query: Optional[str] = None) -> None:
+        """Display help for commands and categories."""
+        prefix = self._get_prefix()
+
+        if query:
+            query = query.lower()
+            if query in self.COMMANDS_INFO:
+                embed = self._build_command_embed(prefix, query)
+            elif query in self.CATEGORIES:
+                embed = self._build_category_embed(prefix, query)
+            else:
+                embed = self._build_not_found_embed(prefix, query)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        items = list(self.COMMANDS_INFO.items())
+        chunks = self._chunk_items(items)
+        total_pages = len(chunks)
+
+        first_embed = HelpPaginator(chunks, prefix, interaction.user.id)._build_embed()
+        if total_pages == 1:
+            await interaction.response.send_message(embed=first_embed, ephemeral=True)
+            return
+
+        view = HelpPaginator(chunks, prefix, interaction.user.id)
+        await interaction.response.send_message(embed=first_embed, view=view, ephemeral=True)
+
+    # ------------------------------------------------------------------
+    # Legacy text command (optional, remove if not needed)
+    # ------------------------------------------------------------------
     @commands.command(name="help", aliases=["commands"])
-    async def help_command(self, ctx: commands.Context, *, query: Optional[str] = None):
+    async def help_command(self, ctx: commands.Context, *, query: Optional[str] = None) -> None:
         """Display help for commands and categories."""
         prefix = self._get_prefix()
 
@@ -182,6 +287,7 @@ class HelpCog(commands.Cog):
         items = list(self.COMMANDS_INFO.items())
         chunks = self._chunk_items(items)
         total_pages = len(chunks)
+
         first_embed = HelpPaginator(chunks, prefix, ctx.author.id)._build_embed()
         if total_pages == 1:
             await ctx.reply(embed=first_embed, mention_author=False)
@@ -190,5 +296,5 @@ class HelpCog(commands.Cog):
         view = HelpPaginator(chunks, prefix, ctx.author.id)
         await ctx.reply(embed=first_embed, view=view, mention_author=False)
 
-async def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(HelpCog(bot))
