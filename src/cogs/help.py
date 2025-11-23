@@ -1,8 +1,8 @@
 import random
 import discord
 from discord.ext import commands
-from typing import Dict, List, Optional
 from discord import app_commands
+from typing import Dict, List, Optional
 
 try:
     from src.modules.load_config import JsonLoader
@@ -13,7 +13,7 @@ class HelpPaginator(discord.ui.View):
     """Persistent view for paginating help embeds via text buttons."""
 
     def __init__(self, chunks: List[List[tuple]], prefix: str, author_id: int):
-        super().__init__(timeout=random.randint(60, 90))
+        super().__init__(timeout=random.randint(60, 120))
         self.chunks = chunks
         self.prefix = prefix
         self.author_id = author_id
@@ -25,13 +25,17 @@ class HelpPaginator(discord.ui.View):
     # Internal helpers
     # ------------------------------------------------------------------
     def _update_buttons(self) -> None:
-        self.prev_button.disabled = self.current_page == 0
-        self.next_button.disabled = self.current_page == self.total_pages - 1
+        first = self.current_page <= 0
+        last = self.current_page >= self.total_pages - 1
+        self.prev_button.disabled = first
+        self.prev_buttonx2.disabled = first
+        self.next_button.disabled = last
+        self.next_buttonx2.disabled = last or self.total_pages < 2
 
     def _build_embed(self) -> discord.Embed:
         chunk = self.chunks[self.current_page]
         embed = discord.Embed(
-            title="Bot Commands",
+            title="🤖 Bot Commands",
             description="Here are the available commands:",
             color=discord.Color.purple(),
         )
@@ -39,9 +43,9 @@ class HelpPaginator(discord.ui.View):
             embed.add_field(name=f"{self.prefix}{cmd}", value=desc, inline=False)
 
         footer_lines = [
-            f"Page {self.current_page + 1}/{self.total_pages} | "
-            f"Type {self.prefix}help <command> for details on a specific command.",
-            f"Use {self.prefix}help <moderation, fun, utility, admin> to explore command categories.",
+            f"📜 Page {self.current_page + 1}/{self.total_pages}",
+            f"❓ Type {self.prefix}help <command> for details on a specific command.",
+            f"❓ Use {self.prefix}help <moderation, fun, utility, admin, owner> to explore command categories.",
         ]
         embed.set_footer(text="\n".join(footer_lines))
         return embed
@@ -49,12 +53,27 @@ class HelpPaginator(discord.ui.View):
     # ------------------------------------------------------------------
     # UI callbacks
     # ------------------------------------------------------------------
+    @discord.ui.button(label="⏪", style=discord.ButtonStyle.secondary)
+    async def prev_buttonx2(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self.current_page > 0:
+            self.current_page = max(0, self.current_page - 2)
+            self._update_buttons()
+            await interaction.response.edit_message(embed=self._build_embed(), view=self)
+
     @discord.ui.button(label="⬅️", style=discord.ButtonStyle.secondary)
     async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page > 0:
             self.current_page -= 1
             self._update_buttons()
             await interaction.response.edit_message(embed=self._build_embed(), view=self)
+
+    @discord.ui.button(label="⏩", style=discord.ButtonStyle.secondary)
+    async def next_buttonx2(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self.current_page >= self.total_pages - 1:
+            return
+        self.current_page = min(self.total_pages - 1, self.current_page + 2)
+        self._update_buttons()
+        await interaction.response.edit_message(embed=self._build_embed(), view=self)
 
     @discord.ui.button(label="➡️", style=discord.ButtonStyle.secondary)
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
@@ -71,7 +90,7 @@ class HelpPaginator(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
             await interaction.response.send_message(
-                "You can't control this menu.", ephemeral=True
+                "❌ You can't control this menu.", ephemeral=True
             )
             return False
         return True
@@ -109,7 +128,6 @@ class HelpCog(commands.Cog):
         "purge": "Purges a specified number of messages from the channel.",
         "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
         "replymodmail": "Reply to a message sent to the moderators via DM.",
-        "restart": "Restarts the Discord bot.",
         "rblxfollowercount": "Fetches the Roblox follower count for a given user ID.",
         "roll": "Rolls a die with a specified number of sides.",
         "say": "Make the bot say something in the specified channel.",
@@ -162,9 +180,6 @@ class HelpCog(commands.Cog):
             "serverinfo",
         ],
         "admin": [
-            "restart",
-            "shutdown",
-            "setstatus",
             "say",
             "dm",
             "giveaway",
@@ -173,6 +188,10 @@ class HelpCog(commands.Cog):
             "tempRole",
             "modmail",
             "getbadge",
+        ],
+        "owner": [
+            "shutdown",
+            "setstatus",
         ],
     }
 
@@ -199,7 +218,7 @@ class HelpCog(commands.Cog):
         """Build an embed for a single command."""
         return (
             discord.Embed(
-                title=f"Command: {prefix}{command}",
+                title=f"📜 Command: {prefix}{command}",
                 description=self.COMMANDS_INFO[command],
                 color=discord.Color.purple(),
             )
@@ -209,7 +228,7 @@ class HelpCog(commands.Cog):
     def _build_category_embed(self, prefix: str, category: str) -> discord.Embed:
         """Build an embed for a category."""
         embed = discord.Embed(
-            title=f"Category: {category.capitalize()}",
+            title=f"📇 Category: {category.capitalize()}",
             description="Here are the commands in this category:",
             color=discord.Color.purple(),
         )
@@ -220,7 +239,7 @@ class HelpCog(commands.Cog):
                 inline=False,
             )
         embed.set_footer(
-            text=f"Type {prefix}help <command> for details on a specific command."
+            text=f"⌨ Type {prefix}help <command> for details on a specific command."
         )
         return embed
 
@@ -230,7 +249,7 @@ class HelpCog(commands.Cog):
             query = query[len(prefix) :]
         return (
             discord.Embed(
-                title="Not Found",
+                title="❌ Not Found",
                 description=f"No command or category named '{query}' found.",
                 color=discord.Color.red(),
             )
