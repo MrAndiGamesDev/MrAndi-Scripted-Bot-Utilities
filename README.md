@@ -1,9 +1,9 @@
 # MrAndi-Scripted-Bot-Utilities
 
-Handy utilities and helpers to keep your scripted bots running smoothly.
+A toolkit of utilities and helpers designed to keep your scripted Discord bots running smoothly and efficiently.
 
-## Features
-- Clean command-line interface
-- Modular script design
-- Works on Windows, macOS, and Linux
-- Plugin-friendly architecture
+## Key Capabilities
+- Intuitive command-line interface for quick setup and control  
+- Modular, reusable script components for rapid development  
+- Cross-platform support: Windows, macOS, and Linux  
+- Extensible plugin system for effortless feature additions
