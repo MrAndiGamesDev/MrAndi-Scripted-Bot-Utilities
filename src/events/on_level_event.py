@@ -1,4 +1,4 @@
-import json
+import sqlite3
 import random
 import discord
 from discord.ext import commands
@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Any
 from src.modules.load_config import JsonLoader
 
-DATA_FILE = Path("src/database/levels.json")
+DB_FILE = Path("src/database/levels.db")
 XP_RANGE = (3, 8)
 BASE_XP = 100
 XP_MULTIPLIER = 1.5
@@ -16,31 +16,39 @@ PROGRESS_EMPTY = "░"
 
 class LevelData:
     @staticmethod
-    def _load() -> Dict[str, Any]:
-        try:
-            with DATA_FILE.open("r", encoding="utf-8") as f:
-                return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return {}
-
-    @staticmethod
-    def _save(data: Dict[str, Any]) -> None:
-        DATA_FILE.write_text(json.dumps(data, indent=4), encoding="utf-8")
+    def _init_db() -> None:
+        with sqlite3.connect(DB_FILE) as db:
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS levels (
+                    user_id INTEGER PRIMARY KEY,
+                    level INTEGER DEFAULT 0,
+                    xp INTEGER DEFAULT 0,
+                    total_xp INTEGER DEFAULT 0
+                )
+            """)
+            db.commit()
 
     @staticmethod
     def get(user_id: int) -> Dict[str, Any]:
-        data = LevelData._load()
-        key = str(user_id)
-        if key not in data:
-            data[key] = {"level": 0, "xp": 0, "total_xp": 0}
-            LevelData._save(data)
-        return data[key]
+        LevelData._init_db()
+        with sqlite3.connect(DB_FILE) as db:
+            cursor = db.execute("SELECT level, xp, total_xp FROM levels WHERE user_id = ?", (user_id,))
+            row = cursor.fetchone()
+            if row is None:
+                db.execute("INSERT INTO levels (user_id) VALUES (?)", (user_id,))
+                db.commit()
+                return {"level": 0, "xp": 0, "total_xp": 0}
+            return {"level": row[0], "xp": row[1], "total_xp": row[2]}
 
     @staticmethod
     def set(user_id: int, payload: Dict[str, Any]) -> None:
-        data = LevelData._load()
-        data[str(user_id)] = payload
-        LevelData._save(data)
+        LevelData._init_db()
+        with sqlite3.connect(DB_FILE) as db:
+            db.execute(
+                "INSERT OR REPLACE INTO levels (user_id, level, xp, total_xp) VALUES (?, ?, ?, ?)",
+                (user_id, payload["level"], payload["xp"], payload["total_xp"])
+            )
+            db.commit()
 
     @staticmethod
     def xp_for(level: int) -> int:
@@ -63,6 +71,7 @@ class LevelSystem(commands.Cog):
             return
 
         user = LevelData.get(message.author.id)
+        
         # Ensure all required keys exist
         user.setdefault("total_xp", 0)
         user.setdefault("xp", 0)
