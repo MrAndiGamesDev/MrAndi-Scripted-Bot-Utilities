@@ -32,25 +32,55 @@ class Level(commands.Cog):
         embed.set_thumbnail(url=target.display_avatar.url)
         await ctx.send(embed=embed)
 
-    @commands.command(name="setlevel", aliases=["setrank"])
+    @commands.command(name="addlevel", aliases=["addrank"])
     @commands.has_permissions(administrator=True)
-    async def setlevel(self, ctx: commands.Context, member: discord.Member, new_level: int) -> None:
-        """Set a user's level (admin only)."""
+    async def addlevel(self, ctx: commands.Context, member: discord.Member, levels: int = 1) -> None:
+        """Add levels to a user (admin only)."""
+        user = LevelData.get(member.id)
+        current_level = user.setdefault("level", 0)
+        new_level = current_level + levels
+
         if new_level < 0:
-            await ctx.send("❌ Level must be non-negative.")
+            await ctx.send("❌ Resulting level must be non-negative.")
             return
 
-        user = LevelData.get(member.id)
         user["level"] = new_level
         user["xp"] = 0
-        user["total_xp"] = LevelData.total_xp_for(new_level)
+        user["total_xp"] = sum(LevelData.xp_for(lvl) for lvl in range(new_level))
         
-        LevelData.save(member.id, user)
+        # Persist the updated user data
+        LevelData.set(member.id, user)
 
         embed = discord.Embed(
-            title="✅ Level Updated",
-            description=f"{member.mention} is now **Level {new_level}**.",
+            title="✅ Levels Added",
+            description=f"{member.mention} gained {levels} level(s) and is now **Level {new_level}**.",
             color=discord.Color.green()
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command(name="removelevel", aliases=["removerank"])
+    @commands.has_permissions(administrator=True)
+    async def removelevel(self, ctx: commands.Context, member: discord.Member, levels: int = 1) -> None:
+        """Remove levels from a user (admin only)."""
+        user = LevelData.get(member.id)
+        current_level = user.setdefault("level", 0)
+        new_level = current_level - levels
+
+        if new_level < 0:
+            await ctx.send("❌ Cannot remove more levels than the user currently has.")
+            return
+
+        user["level"] = new_level
+        user["xp"] = 0
+        user["total_xp"] = sum(LevelData.xp_for(lvl) for lvl in range(new_level))
+        
+        # Persist the updated user data
+        LevelData.set(member.id, user)
+
+        embed = discord.Embed(
+            title="✅ Levels Removed",
+            description=f"{member.mention} lost {levels} level(s) and is now **Level {new_level}**.",
+            color=discord.Color.red()
         )
         await ctx.send(embed=embed)
 
