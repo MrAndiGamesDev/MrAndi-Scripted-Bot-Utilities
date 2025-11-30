@@ -105,6 +105,7 @@ class HelpCog(commands.Cog):
         "avatar": "Displays the avatar of a user.",
         "ban": "Bans a member from the server.",
         "botinfo": "Displays information about the bot.",
+        "bunny20": "Sends 20 bunny emojis in a single message.",
         "dm": "Make the bot say something in dms.",
         "joke": "Fetches a random meme.",
         "getbadge": "Provides information about getting the Active Developer Badge",
@@ -159,6 +160,7 @@ class HelpCog(commands.Cog):
         "fun": [
             "joke",
             "rps",
+            "bunny20",
             "roll",
             "meme",
             "tictactoe",
