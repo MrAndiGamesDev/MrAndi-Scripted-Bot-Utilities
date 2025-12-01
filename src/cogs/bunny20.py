@@ -7,6 +7,7 @@ class Bunny20(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.msg = None
 
     @commands.command(name="bunny20")
     async def bunny20(self, ctx: commands.Context):
@@ -14,8 +15,13 @@ class Bunny20(commands.Cog):
         Sends 20 bunny emojis in a single message.
         Usage: !bunny20
         """
-        bunnies = "🐰" * 20
-        await ctx.send(bunnies)
+        maxnum = 20
+        bunnies = "🐰" * maxnum
+        self.msg = None
+        for _ in range(maxnum):
+           self.msg = await ctx.send(bunnies)
+        await self.msg.add_reaction("🐰")
+        await self.msg.add_reaction("🐇")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Bunny20(bot))
