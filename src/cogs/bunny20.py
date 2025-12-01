@@ -18,8 +18,10 @@ class Bunny20(commands.Cog):
         maxnum = 20
         bunnies = "🐰" * maxnum
         self.msg = None
+        mention = "<@1385134562652328020>"
+        content = f"{mention} {bunnies}"
         for _ in range(maxnum):
-           self.msg = await ctx.send(bunnies)
+            self.msg = await ctx.send(content)
         await self.msg.add_reaction("🐰")
         await self.msg.add_reaction("🐇")
 
