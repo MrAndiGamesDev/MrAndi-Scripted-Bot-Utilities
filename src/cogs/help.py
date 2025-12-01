@@ -133,7 +133,6 @@ class HelpCog(commands.Cog):
         "roll": "Rolls a die with a specified number of sides.",
         "say": "Make the bot say something in the specified channel.",
         "setstatus": "Sets the bot's status message.",
-        "setlevel": "Sets a user's level (Admin only).",
         "shutdown": "Shuts down the bot. (Owner only)",
         "serverinfo": "Displays information about the server.",
         "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
