@@ -5,7 +5,7 @@ class Ping(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
     
-    @commands.command(name="ping", aliases=["latency"])
+    @commands.command(name="ping", help="Displays the bot's latency in milliseconds.", aliases=["latency"])
     async def ping(self, ctx: commands.Context):  # Changed command name to ping which is more conventional
         PingEmbed = discord.Embed(
             title="🏓 Pong!",

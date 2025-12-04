@@ -5,7 +5,7 @@ class Ban(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="ban", aliases=["banmember"], help="Bans a member from the server.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         """Bans a member from the server."""

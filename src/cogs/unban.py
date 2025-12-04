@@ -5,7 +5,7 @@ class Unban(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="unban", help="Unbans a member from the server.")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx: commands.Context, *, member: discord.Member):
         """Unbans a member from the server."""

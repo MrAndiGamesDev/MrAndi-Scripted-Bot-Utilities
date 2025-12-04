@@ -5,7 +5,7 @@ class SetStatus(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="setstatus", aliases=["setbio"])
+    @commands.command(name="setstatus", help="Sets the bot's status and activity.", aliases=["setbio"])
     @commands.is_owner()
     async def setstatus(self, ctx: commands.Context, status_type: str, status_state: str = None, *, status_text: str = None):
         # Map status types to ActivityType

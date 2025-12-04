@@ -6,7 +6,7 @@ class Slowmode(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="slowmode", aliases=["slow"])
+    @commands.command(name="slowmode", aliases=["slow"], help="Sets slowmode for the channel in seconds, minutes, or hours.")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
     async def set_slowmode(self, ctx: commands.Context, time: str):
         """Sets slowmode for the channel in seconds, minutes, or hours."""

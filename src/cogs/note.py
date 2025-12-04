@@ -6,7 +6,7 @@ class NoteCog(commands.Cog):
         self.bot = bot
         self.notes = {}
 
-    @commands.command()
+    @commands.command(name="note", help="Adds a personal note.")
     async def note(self, ctx: commands.Context, *, content: str):
         """Adds a personal note."""
         if ctx.author.id not in self.notes:
@@ -19,7 +19,7 @@ class NoteCog(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="notes", help="Displays your personal notes.")
     async def notes(self, ctx: commands.Context):
         """Displays your personal notes."""
         if ctx.author.id not in self.notes or not self.notes[ctx.author.id]:
@@ -39,7 +39,7 @@ class NoteCog(commands.Cog):
             )
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="clearnotes", help="Clears all your personal notes.")
     async def clearnotes(self, ctx: commands.Context):
         """Clears all your personal notes."""
         self.notes[ctx.author.id] = []

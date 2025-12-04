@@ -4,8 +4,8 @@ from discord.ext import commands
 class ServerInfo(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    @commands.command(name="serverinfo", aliases=["guildinfo"])
+        
+    @commands.command(name="serverinfo", help="Displays detailed information about the current server.", aliases=["guildinfo"])
     @commands.guild_only()
     async def serverinfo(self, ctx: commands.Context):
         """Display detailed information about the current server."""

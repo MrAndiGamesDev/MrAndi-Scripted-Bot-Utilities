@@ -4,8 +4,8 @@ from discord.ext import commands
 class Whomademe(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    @commands.command(name="whomademe", aliases=["who"])
+        
+    @commands.command(name="whomademe", help="Displays information about who made me.", aliases=["who"])
     async def whomademe(self, ctx: commands.Context):
         embed = discord.Embed(
             title="🔍 Who Made Me?",

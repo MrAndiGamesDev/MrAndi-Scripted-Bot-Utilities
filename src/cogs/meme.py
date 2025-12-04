@@ -8,7 +8,7 @@ class Meme(commands.Cog):
         self.bot = bot
         self.tenor_key = os.getenv("TENOR_KEY")  # Replace with your actual Tenor API key
     
-    @commands.command()
+    @commands.command(name="meme", help="Fetch a GIF from Tenor based on search query.")
     async def meme(self, ctx: commands.Context, *, search: str = "random"):
         """Fetch a GIF from Tenor based on search query."""
         limit = 20

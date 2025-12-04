@@ -7,7 +7,7 @@ class Uptime(commands.Cog):
         self.bot = bot
         self.start_time = datetime.datetime.now(datetime.timezone.utc)
 
-    @commands.command(name="uptime", aliases=["up"])
+    @commands.command(name="uptime", help="Displays the bot's uptime.", aliases=["up"])
     async def uptime(self, ctx: commands.Context):
         now = datetime.datetime.now(datetime.timezone.utc)
         delta = now - self.start_time

@@ -93,7 +93,7 @@ class RobloxFollowers(commands.Cog):
             self.cache[cache_key] = {"value": name, "ts": time.monotonic()}
         return name
 
-    @commands.command(name="rblxfollowers", aliases=["rfcount", "rfc"])
+    @commands.command(name="rblxfollowers", help="Displays the Roblox follower count for the specified user ID.", aliases=["rfcount", "rfc"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def followers(self, ctx: commands.Context, user_id: int):
         try:

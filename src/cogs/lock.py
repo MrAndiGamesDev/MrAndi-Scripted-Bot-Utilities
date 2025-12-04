@@ -5,7 +5,7 @@ class Lockdown(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="lock")
+    @commands.command(name="lock", help="Locks the channel so that no one can send messages.")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
     async def lock_channel(self, ctx: commands.Context):
         """Locks the channel so that no one can send messages."""
@@ -23,7 +23,7 @@ class Lockdown(commands.Cog):
         except discord.HTTPException as e:
             await ctx.send(f"Failed to lock the channel: {e}")
 
-    @commands.command(name="unlock")
+    @commands.command(name="unlock", help="Unlocks the channel so that everyone can send messages again.")
     @commands.has_permissions(manage_channels=True)  # Require manage_channels permission
     async def unlock_channel(self, ctx: commands.Context):
         """Unlocks the channel so that everyone can send messages again."""
