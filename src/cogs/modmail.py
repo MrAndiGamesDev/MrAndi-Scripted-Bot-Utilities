@@ -9,7 +9,7 @@ class ModMail(commands.Cog):
         self.config = self.jsonloader.load()
         self.mod_channel_id = self.config["ModChannelID"]  # Channel ID where moderators will receive messages
 
-    @commands.command(name="modmail")
+    @commands.command(name="modmail", help="Send a message to the moderators via DM.")
     async def modmail(self, ctx: commands.Context, *, message: str):
         """Send a message to the moderators via DM."""
         if not message:
@@ -35,7 +35,7 @@ class ModMail(commands.Cog):
         else:
             await ctx.send("This command can only be used in DMs. Please message me in DMs.")
 
-    @commands.command(name="replymodmail")
+    @commands.command(name="replymodmail", help="Reply to a user's modmail via DM.")
     @commands.has_permissions(administrator=True)
     async def reply_modmail(self, ctx: commands.Context, user: discord.User, *, reply_message: str):
         """Reply to a user's modmail via DM."""

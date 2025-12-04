@@ -7,7 +7,7 @@ class WarnSystem(commands.Cog):
         self.bot = bot
         self.warnings = defaultdict(list)  # Stores warnings in memory
 
-    @commands.command(name="warn")
+    @commands.command(name="warn", aliases=["warning"], help="Warns a member and records the reason.")
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx: commands.Context, member: discord.Member, *, reason: str):
         """Warns a member and records the reason."""
@@ -22,7 +22,7 @@ class WarnSystem(commands.Cog):
         self.warnings[member.id].append(reason)
         embed = discord.Embed(
             title="Member Warned",
-            description=f"{member.mention} has been warned for: {reason}",
+            description=f"{member.mention} has been warned reason: {reason}",
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)

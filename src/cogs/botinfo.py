@@ -68,7 +68,7 @@ class BotInfoSystem(commands.Cog):
         )
         return embed
 
-    @commands.command(name="botinfo", aliases=["botstats"])
+    @commands.command(name="botinfo", aliases=["botstats"], help="Displays bot information and system stats.")
     @commands.guild_only()
     async def botinfo(self, ctx: commands.Context):
         try:

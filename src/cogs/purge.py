@@ -5,7 +5,7 @@ class Purge(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="purge", aliases=["clear"])
+    @commands.command(name="purge", help="Purges a specified number of messages from the channel.", aliases=["clear"])
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.Context, amount: int):
         """Purges a specified number of messages from the channel."""

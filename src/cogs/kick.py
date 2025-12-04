@@ -5,7 +5,7 @@ class Kick(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="kick", aliases=["yet"])
+    @commands.command(name="kick", aliases=["kickmember"], help="Kicks a member from the server.")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         """Kicks a member from the server."""

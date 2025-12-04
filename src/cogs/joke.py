@@ -14,7 +14,7 @@ class Joke(commands.Cog):
         self.config = self.jsonloader.load()
         self.jokes = self.config["jokes"]
 
-    @commands.command(name="joke")
+    @commands.command(name="joke", help="Sends a random joke.")
     async def joke(self, ctx: commands.Context):
         """Sends a random joke."""
         joke = random.choice(self.jokes)  # Pick a random joke

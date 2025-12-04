@@ -5,7 +5,7 @@ class MemberCount(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="membercount", aliases=["members"])
+    @commands.command(name="membercount", aliases=["members"], help="Displays the number of members in the server.")
     async def membercount(self, ctx: commands.Context):
         """Displays the number of members in the server."""
         member_count = ctx.guild.member_count

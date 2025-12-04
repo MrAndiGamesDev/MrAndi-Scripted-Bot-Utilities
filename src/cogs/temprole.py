@@ -26,7 +26,7 @@ class TempRole(commands.Cog):
                 total_seconds += value
         return total_seconds
 
-    @commands.command(name="temprole", aliases=["temp"])
+    @commands.command(name="temprole", aliases=["temp"], help="Assigns a temporary role to a user for a specified duration (e.g., 1h30m, 2d, 30s).")
     @commands.has_permissions(manage_roles=True)
     async def temprole(self, ctx: commands.Context, member: discord.Member, role: discord.Role, *, duration: str):
         """Assigns a temporary role to a user for a specified duration (e.g., 1h30m, 2d, 30s)."""

@@ -5,7 +5,7 @@ class RPS(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="rps", help="Play a game of rock-paper-scissors. Choices: rock, paper, scissors")
     async def rps(self, ctx: commands.Context, choice: str):
         """Play a game of rock-paper-scissors. Choices: rock, paper, scissors"""
         choices = ["rock", "paper", "scissors"]

@@ -6,7 +6,11 @@ class TicTacToe(commands.Cog):
         self.bot = bot
         self.games = {}
 
-    @commands.command(name="tictactoe", aliases=["ttt"])
+    def format_board(self, board: list[str]):
+        rows = [board[i:i+3] for i in range(0, 9, 3)]
+        return "\n".join("".join(row) for row in rows)
+
+    @commands.command(name="tictactoe", help="Starts a game of Tic-Tac-Toe with another player.", aliases=["ttt"])
     async def tictactoe(self, ctx: commands.Context, opponent: discord.Member = None):
         if opponent is None or opponent == ctx.author:
             await ctx.send("You need to mention an opponent to play with!")
@@ -81,10 +85,6 @@ class TicTacToe(commands.Cog):
             return
 
         await reaction.remove(user)
-
-    def format_board(self, board: list[str]):
-        rows = [board[i:i+3] for i in range(0, 9, 3)]
-        return "\n".join("".join(row) for row in rows)
 
     def check_winner(self, board: list[str]):
         lines = [

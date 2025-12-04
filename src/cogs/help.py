@@ -9,6 +9,47 @@ try:
 except ImportError:
     raise
 
+# Centralised command registry
+# Each entry: (description, category)
+_CMD = {
+    "avatar": ("Displays the avatar of a user.", "utility"),
+    "ban": ("Bans a member from the server.", "moderation"),
+    "botinfo": ("Displays information about the bot.", "utility"),
+    "clearnotes": ("Clears all your personal notes.", "utility"),
+    "clearwarnings": ("Clears/warns/displays warnings for a member.", "moderation"),
+    "dm": ("Make the bot say something in dms.", "admin"),
+    "getbadge": ("Provides information about getting the Active Developer Badge.", "admin"),
+    "giveaway": ("Start a giveaway. Duration format: 1d, 2h, 30m (days/hours/minutes).", "admin"),
+    "giveawayend": ("End a giveaway.", "admin"),
+    "giveawayreroll": ("Reroll the winners of a giveaway.", "admin"),
+    "help": ("Shows this message.", None),
+    "invite": ("Generates and sends an invite link to the server.", "utility"),
+    "joke": ("Fetches a random meme.", "fun"),
+    "kick": ("Kicks a member from the server.", "moderation"),
+    "lockdown": ("Locks/unlocks the channel so that no one/everyone can send messages.", "moderation"),
+    "membercount": ("Displays the number of members in the server.", "utility"),
+    "meme": ("Fetches a random meme.", "fun"),
+    "modmail": ("Send/reply to a message to/from the moderators via DM.", "admin"),
+    "note": ("Adds a personal note.", "utility"),
+    "notes": ("Displays your personal notes.", "utility"),
+    "ping": ("Replies with the bot client ping.", "utility"),
+    "purge": ("Purges a specified number of messages from the channel.", "moderation"),
+    "replymodmail": ("Reply to a message sent to the moderators via DM.", "moderation"),
+    "rblxfollowercount": ("Fetches the Roblox follower count for a given user ID.", "utility"),
+    "roll": ("Rolls a die with a specified number of sides.", "fun"),
+    "rps": ("Play a game of rock-paper-scissors. Choices: rock, paper, scissors.", "fun"),
+    "say": ("Make the bot say something in the specified channel.", "admin"),
+    "serverinfo": ("Displays information about the server.", "utility"),
+    "setstatus": ("Sets the bot's status message.", "owner"),
+    "shutdown": ("Shuts down the bot. (Owner only)", "owner"),
+    "slowmode": ("Sets slowmode for the channel in seconds, minutes, or hours.", "moderation"),
+    "tempRole": ("Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).", "admin"),
+    "tictactoe": ("Play a game of tic-tac-toe with another player.", "fun"),
+    "unban": ("Unbans a member from the server.", "moderation"),
+    "uptime": ("Shows how long the bot has been online.", "utility"),
+    "whomademe": ("Displays information about who made the bot.", "utility"),
+}
+
 class HelpPaginator(discord.ui.View):
     """Persistent view for paginating help embeds via text buttons."""
 
@@ -99,101 +140,13 @@ class HelpCog(commands.Cog):
     """Cog that handles the dynamic help command."""
 
     # ------------------------------------------------------------------
-    # Data
+    # Public interfaces derived from the registry
     # ------------------------------------------------------------------
-    COMMANDS_INFO: Dict[str, str] = {
-        "avatar": "Displays the avatar of a user.",
-        "ban": "Bans a member from the server.",
-        "botinfo": "Displays information about the bot.",
-        "bunny20": "Sends 20 bunny emojis in a single message.",
-        "dm": "Make the bot say something in dms.",
-        "joke": "Fetches a random meme.",
-        "getbadge": "Provides information about getting the Active Developer Badge",
-        "giveaway": "Start a giveaway. Duration format: 1d, 2h, 30m (days/hours/minutes).",
-        "giveawayreroll": "Reroll the winners of a giveaway.",
-        "giveawayend": "End a giveaway.",
-        "invite": "Generates and sends an invite link to the server.",
-        "kick": "Kicks a member from the server.",
-        "level": "Displays the level stats of a user.",
-        "addlevel": "Adds levels to a user (Admin only).",
-        "removelevel": "Removes levels from a user (Admin only).",
-        "lockdown": "Locks/unlocks the channel so that no one/everyone can send messages.",
-        "membercount": "Displays the number of members in the server.",
-        "meme": "Fetches a random meme.",
-        "modmail": "Send/reply to a message to/from the moderators via DM.",
-        "note": "Adds a personal note.",
-        "notes": "Displays your personal notes.",
-        "clearnotes": "Clears all your personal notes.",
-        "whomademe": "Displays information about who made the bot.",
-        "ping": "Replies with the bot client ping.",
-        "purge": "Purges a specified number of messages from the channel.",
-        "rps": "Play a game of rock-paper-scissors. Choices: rock, paper, scissors.",
-        "replymodmail": "Reply to a message sent to the moderators via DM.",
-        "rblxfollowercount": "Fetches the Roblox follower count for a given user ID.",
-        "roll": "Rolls a die with a specified number of sides.",
-        "say": "Make the bot say something in the specified channel.",
-        "setstatus": "Sets the bot's status message.",
-        "shutdown": "Shuts down the bot. (Owner only)",
-        "serverinfo": "Displays information about the server.",
-        "slowmode": "Sets slowmode for the channel in seconds, minutes, or hours.",
-        "tempRole": "Assigns a temporary role to a user for a specified duration (e.g., 10m, 1h).",
-        "tictactoe": "Play a game of tic-tac-toe with another player.",
-        "transactionroblox": "Checks your roblox transactions/robux balances.",
-        "unban": "Unbans a member from the server.",
-        "uptime": "Shows how long the bot has been online.",
-        "clearwarnings": "Clears/warns/displays warnings for a member.",
-        "help": "Shows this message",
-    }
+    COMMANDS_INFO: Dict[str, str] = {cmd: desc for cmd, (desc, _) in _CMD.items() if desc is not None}
 
     CATEGORIES: Dict[str, List[str]] = {
-        "moderation": [
-            "ban",
-            "kick",
-            "unban",
-            "purge",
-            "lockdown",
-            "slowmode",
-            "clearwarnings",
-            "replymodmail",
-        ],
-        "fun": [
-            "joke",
-            "rps",
-            "bunny20",
-            "roll",
-            "meme",
-            "tictactoe",
-        ],
-        "utility": [
-            "avatar",
-            "botinfo",
-            "membercount",
-            "ping",
-            "invite",
-            "note",
-            "notes",
-            "clearnotes",
-            "level",
-            "addlevel",
-            "removelevel",
-            "rblxfollowercount",
-            "uptime",
-            "serverinfo",
-        ],
-        "admin": [
-            "say",
-            "dm",
-            "giveaway",
-            "giveawayreroll",
-            "giveawayend",
-            "tempRole",
-            "modmail",
-            "getbadge",
-        ],
-        "owner": [
-            "shutdown",
-            "setstatus",
-        ],
+        cat: [cmd for cmd, (_, c) in _CMD.items() if c == cat]
+        for cat in {"moderation", "fun", "utility", "admin", "owner"}
     }
 
     def __init__(self, bot: commands.Bot) -> None:
@@ -292,7 +245,7 @@ class HelpCog(commands.Cog):
     # ------------------------------------------------------------------
     # Legacy text command (optional, remove if not needed)
     # ------------------------------------------------------------------
-    @commands.command(name="help", aliases=["commands"])
+    @commands.command(name="help", aliases=["commands"], help="Display help for commands and categories.")
     async def help_command(self, ctx: commands.Context, *, query: Optional[str] = None) -> None:
         """Display help for commands and categories."""
         prefix = self._get_prefix()

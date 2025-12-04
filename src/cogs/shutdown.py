@@ -10,6 +10,7 @@ class Shutdown(commands.Cog):
     @commands.command(name="shutdown", aliases=["die"])
     @commands.is_owner()
     async def shutdown(self, ctx: commands.Context) -> None:
+        """Shuts down the bot."""
         embed = discord.Embed(
             title="🚫 Shutting Down",
             description="I am going offline so bye bye now!",

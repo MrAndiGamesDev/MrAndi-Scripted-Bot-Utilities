@@ -9,7 +9,7 @@ class Giveaway(commands.Cog):
         self.bot = bot
         self.active_giveaways = {}
 
-    @commands.command(name="giveaway", aliases=["gw"])
+    @commands.command(name="giveaway", aliases=["gw"], help="Start a giveaway. Duration format: 1d, 2h, 30m (days/hours/minutes).")
     @commands.has_permissions(manage_messages=True)
     async def giveaway(self, ctx: commands.Context, duration: str, *, prize: str):
         """Start a giveaway. Duration format: 1d, 2h, 30m (days/hours/minutes)."""
@@ -94,7 +94,7 @@ class Giveaway(commands.Cog):
         if message.id in self.active_giveaways:
             del self.active_giveaways[message.id]
 
-    @commands.command(name="giveawayreroll", aliases=["reroll"])
+    @commands.command(name="giveawayreroll", aliases=["reroll"], help="Reroll a giveaway winner by message ID.")
     @commands.has_permissions(manage_messages=True)
     async def greroll(self, ctx: commands.Context, message_id: int):
         """Reroll a giveaway winner by message ID."""
@@ -124,7 +124,7 @@ class Giveaway(commands.Cog):
         
         await ctx.send(f"🎉 New winner: {winner.mention}! You won: **{prize}**!")
 
-    @commands.command(name="giveawayend", aliases=["gend"])
+    @commands.command(name="giveawayend", aliases=["gend"], help="End a giveaway early by message ID.")
     @commands.has_permissions(manage_messages=True)
     async def gend(self, ctx: commands.Context, message_id: int):
         """End a giveaway early by message ID."""

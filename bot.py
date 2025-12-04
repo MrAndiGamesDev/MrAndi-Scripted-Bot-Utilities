@@ -100,5 +100,5 @@ class Launcher:
             print(f"Error running bot: {e}")
 
 if __name__ == "__main__":
-    bot_launcher: Launcher = Launcher()
+    bot_launcher = Launcher()
     bot_launcher.run()
