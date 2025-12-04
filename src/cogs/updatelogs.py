@@ -104,7 +104,7 @@ class UpdateLogCog(commands.Cog):
         "v0.1.0": "Initial release with core moderation, fun, utility, admin, and owner commands.",
         "v0.5.5": "Whats New?:\n"
             "Added features: updatelogs.\n"
-            "Removed features: leveling system, database system.\n"
+            "Removed features: leveling system, database system, bunny20.\n"
             "Refactored a bot utilites.\n"
             "Refactored a bunch of commands and more!.\n"
             "Bugs fixes.\n"
